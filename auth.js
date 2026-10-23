@@ -1,67 +1,53 @@
-(()=>{
-const lock=document.getElementById(‘lock-screen’);
-const home=document.getElementById(‘home-screen’);
-const keypad=document.getElementById(‘keypad’);
-const dots=document.getElementById(‘pass-dots’);
-let entered=’’;
-
-function updateDots(){
-dots.textContent=Array.from({length:4},(_,i)=>i<entered.length?‘●’:‘○’).join(’ ’);
-}
-
-function unlock(){
-if(entered===‘0207’){
-lock.classList.add(‘hidden’);
-home.classList.remove(‘hidden’);
-sessionStorage.setItem(‘unlocked’,‘1’);
-
-if(!sessionStorage.getItem(‘toastShown’)){
-const toast=document.getElementById(‘toast’);
-toast.classList.remove(‘hidden’);
-setTimeout(()=>toast.classList.add(‘hidden’),3000);
-sessionStorage.setItem(‘toastShown’,‘1’);
-}
-}else{
-entered=’’;
-updateDots();
-}
-}
-
-function addKey(value){
-const button=document.createElement(‘button’);
-button.textContent=value;
-
-if(value){
-button.addEventListener(‘click’,()=>{
-if(value===‘⌫’){
-entered=entered.slice(0,-1);
-}else if(entered.length<4){
-entered+=value;
-}
-
-updateDots();
-
-if(entered.length===4){
-unlock();
-}
+document.addEventListener("DOMContentLoaded", () => {
+  const lockScreen = document.getElementById("lock-screen");
+  const homeScreen = document.getElementById("home-screen");
+  const passcodeDisplay = document.getElementById("passcode-display");
+  const keypad = document.getElementById("keypad");
+  if (!lockScreen || !homeScreen || !passcodeDisplay || !keypad) {
+    console.error("잠금 화면 요소를 찾을 수 없습니다.");
+    return;
+  }
+  let enteredCode = "";
+  const correctCode = "0207";
+  keypad.innerHTML = "";
+  for (let i = 1; i <= 9; i++) {
+    createButton(String(i));
+  }
+  createButton("");
+  createButton("0");
+  createButton("⌫");
+  function createButton(value) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "keypad-button";
+    button.textContent = value;
+    if (value === "") {
+      button.disabled = true;
+    } else {
+      button.addEventListener("click", () => {
+        if (value === "⌫") {
+          enteredCode = enteredCode.slice(0, -1);
+        } else if (enteredCode.length < 4) {
+          enteredCode += value;
+        }
+        updateDisplay();
+        if (enteredCode.length === 4) {
+          if (enteredCode === correctCode) {
+            lockScreen.classList.add("hidden");
+            homeScreen.classList.remove("hidden");
+          } else {
+            setTimeout(() => {
+              enteredCode = "";
+              updateDisplay();
+            }, 500);
+          }
+        }
+      });
+    }
+    keypad.appendChild(button);
+  }
+  function updateDisplay() {
+    passcodeDisplay.textContent =
+      "● ".repeat(enteredCode.length).trim();
+  }
 });
-}
-
-keypad.appendChild(button);
-}
-
-for(let n=1;n<=9;n++)addKey(String(n));
-addKey(’’);
-addKey(‘0’);
-addKey(‘⌫’);
-
-document.getElementById(‘delete-key’).addEventListener(‘click’,()=>{
-entered=entered.slice(0,-1);
-updateDots();
-});
-
-if(sessionStorage.getItem(‘unlocked’)){
-lock.classList.add(‘hidden’);
-home.classList.remove(‘hidden’);
-}
-})();
