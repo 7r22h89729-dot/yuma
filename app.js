@@ -246,6 +246,59 @@ try {
       console.log(message);
       return;
     }
+    // 읽지 않은 유마 문자 개수
+function getUnreadYumaCount() {
+return yumaMessages.filter(
+message => message.from === “theirs” && message.unread === true
+).length;
+}
+
+// 홈 화면 문자 앱 배지 갱신
+function updateMessageBadge() {
+const count = getUnreadYumaCount();
+let badge = document.querySelector(”#messages-badge”);
+
+if (!badge) {
+  const messagesApp = document.querySelector('[data-app="messages"]');
+  if (messagesApp) {
+    badge = document.createElement("span");
+    badge.id = "messages-badge";
+    badge.className = "notification-badge";
+    messagesApp.appendChild(badge);
+  }
+}
+if (!badge) return;
+badge.textContent = count > 99 ? "99+" : String(count);
+badge.classList.toggle("hidden", count === 0);
+badge.setAttribute("aria-label", `읽지 않은 문자 ${count}개`);
+
+}
+
+// 문자 알림 표시
+function showMessageNotification(message) {
+const old = document.getElementById(“yuma-message-notification”);
+if (old) old.remove();
+
+const notification = document.createElement("button");
+notification.type = "button";
+notification.id = "yuma-message-notification";
+notification.className = "yuma-message-notification";
+const title = document.createElement("strong");
+title.textContent = "メッセージ";
+const sender = document.createElement("small");
+sender.textContent = "ユウマ🐱🖤";
+const text = document.createElement("span");
+text.textContent = message;
+notification.append(title, sender, text);
+notification.addEventListener("click", () => {
+  notification.remove();
+  openApp("messages");
+  renderChat("messages", "yuma");
+});
+document.body.appendChild(notification);
+setTimeout(() => notification.remove(), 4000);
+
+}
     toast.textContent = message;
     toast.classList.remove("hidden");
     toast.classList.add("show");
@@ -348,7 +401,9 @@ try {
 
     setTitle(isKakao ? "KakaoTalk" : "메시지");
     setView(`${type}-chat`);
-
+    if (!isKakao && person === "yuma") {
+    markYumaMessagesRead();
+    }
     content.innerHTML = `<section class="ios-chat-page ${isKakao ? "kakao-chat" : "messages-chat"}"><div class="ios-chat-person">${avatarHTML}<strong>${escapeHTML(contactName)}</strong></div><div class="ios-chat-bubbles" id="chat-bubbles"></div><form class="ios-composer" id="chat-form"><input id="chat-text" placeholder="메시지 입력..." autocomplete="off" maxlength="1000"><button type="submit" aria-label="메시지 보내기">↑</button></form></section>`;
 
     const bubbleBox = $("#chat-bubbles");
@@ -388,8 +443,47 @@ try {
 
       input.value = "";
       input.focus();
+      // 유마의 문자 앱에서만 자동 답장을 실행
+if (!isKakao && person === "yuma") {
+  scheduleYumaReply(text);
+}
     });
   }
+  // 유마 자동 답장
+function scheduleYumaReply(userText) {
+const normalized = userText.replace(/\s+/g, “”);
+
+let replies = [];
+if (normalized.includes("이제일어났어") || normalized.includes("일어났어")) {
+  replies = [
+    "ㅋㅋㅋㅋ잘햇엉",
+    "잘잤어?",
+    "😚😚"
+  ];
+} else {
+  return;
+}
+replies.forEach((reply, index) => {
+  setTimeout(() => {
+    const message = {
+      from: "theirs",
+      sender: "ユウマ🐱🖤",
+      text: reply,
+      time: new Date().toISOString(),
+      unread: true
+    };
+    yumaMessages.push(message);
+    save("yumaMessages", yumaMessages);
+    if (current === "messages" && currentView === "messages-chat") {
+      renderChat("messages", "yuma");
+    } else {
+      updateMessageBadge();
+      showMessageNotification(reply);
+    }
+  }, 1200 + index * 1800);
+});
+
+}
   /* 카카오톡: 유마와 민서 채팅방 모두 유지 */
 function renderKakao() {
 setTitle("KakaoTalk");
