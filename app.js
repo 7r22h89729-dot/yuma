@@ -1246,31 +1246,35 @@ document.addEventListener("DOMContentLoaded", () => {
     if (tab === "profile") profile();
     else feed();
 
-    content.appendChild(showTabs([
+        content.appendChild(showTabs([
       { id: "home", label: "홈", icon: "⌂" },
       { id: "search", label: "검색", icon: "⌕" },
       { id: "create", label: "만들기", icon: "＋" },
       { id: "reels", label: "릴스", icon: "▷" },
       { id: "profile", label: "프로필", icon: "♙" }
     ], tab, (next) => {
-      if (next === "create") {
-        showToast("게시물 만들기는 준비 중입니다.");
-      } else if (next === "search") {
-        showToast("검색 기능은 준비 중입니다.");
-      } else if (next === "reels") {
-        showToast("릴스는 준비 중입니다.");
+      if (["create", "search", "reels"].includes(next)) {
+        const messages = {
+          create: "게시물 만들기는 준비 중입니다.",
+          search: "검색 기능은 준비 중입니다.",
+          reels: "릴스는 준비 중입니다."
+        };
+
+        showToast(messages[next]);
+        return;
+      }
+
       renderInstagram(next);
-}
-}));
-}
+    }));
+  }
 
 /* ———————————
 설정 앱
 ——————————— */
 
 function renderSettings() {
-setTitle(“설정”);
-setView(“settings-home”);
+setTitle("설정");
+setView("settings-home");
 
 content.innerHTML = `
   <section class="ios-page ios-settings-page">
@@ -1322,8 +1326,8 @@ $("#setting-about").addEventListener("click", () => {
 ——————————— */
 
 function renderCamera() {
-setTitle(“카메라”);
-setView(“camera-home”);
+setTitle("카메라");
+setView("camera-home");
 
 content.innerHTML = `
   <section class="ios-camera-page">
@@ -1387,7 +1391,7 @@ cameraStream = null;
 시계 앱
 ——————————— */
 
-function renderClock(tab = “world”) {
+function renderClock(tab = "world") {
 stopClockTools();
 
 setTitle("시계");
@@ -1607,7 +1611,7 @@ if (timerInterval) {
 ——————————— */
 
 function showToast(message) {
-const toast = $(”#toast”);
+const toast = $("#toast");
 
 if (!toast) {
   console.log(message);
