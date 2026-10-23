@@ -723,130 +723,147 @@ function startCall(name) {
     style.id = styleId;
     style.textContent = `
       .yuma-call-ui {
-        position: relative;
-        box-sizing: border-box;
-        min-height: 100%;
-        height: 100%;
-        padding: 18px 24px 36px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        color: white;
-        text-align: center;
-        background:
-          radial-gradient(ellipse at 50% 28%, #51515c 0%, #292932 42%, #111116 100%);
-        border-radius: 22px;
-        overflow: hidden;
-      }
-      .yuma-call-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: #c8c8d0;
-        font-size: 13px;
-      }
-      .yuma-call-person {
-        margin: auto 0;
-      }
-      .yuma-call-photo {
-        width: 112px;
-        height: 112px;
-        margin: 0 auto 22px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background: linear-gradient(145deg, #aaaab4, #686875);
-        box-shadow: 0 8px 35px #0005;
-        font-size: 54px;
-      }
-      .yuma-call-person h1 {
-        margin: 0;
-        font-size: 29px;
-        font-weight: 600;
-        letter-spacing: -.6px;
-      }
-      .yuma-call-person p {
-        margin-top: 13px;
-        color: #d0d0d6;
-        font-size: 15px;
-      }
-      .yuma-call-actions,
-      .yuma-call-controls {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 0 18px;
-      }
-      .yuma-call-actions button,
-      .yuma-call-controls button {
-        border: 0;
-        background: transparent;
-        color: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        font: inherit;
-        cursor: pointer;
-      }
-      .yuma-call-actions small,
-      .yuma-call-controls small {
-        color: #ededf1;
-        font-size: 12px;
-      }
-      .yuma-call-button {
-        width: 66px;
-        height: 66px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 28px;
-        box-shadow: 0 4px 16px #0003;
-      }
-      .yuma-call-button.red {
-        background: #ff3b30;
-      }
-      .yuma-call-button.green {
-        background: #30d158;
-      }
-      .yuma-call-controls {
-        flex-wrap: wrap;
-      }
-      .yuma-call-controls button {
-        width: 36%;
-        margin: 8px 0;
-      }
-      .yuma-call-controls button > span:first-child:not(.yuma-call-button) {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #42424c;
-        font-size: 23px;
-      }
-      .yuma-call-ui .hidden {
-        display: none !important;
-      }
-      @media (max-height: 650px) {
-        .yuma-call-photo {
-          width: 82px;
-          height: 82px;
-          font-size: 40px;
-          margin-bottom: 14px;
-        }
-        .yuma-call-person h1 {
-          font-size: 24px;
-        }
-        .yuma-call-button {
-          width: 58px;
-          height: 58px;
-        }
-      }
+box-sizing: border-box;
+width: 100%;
+min-height: 100%;
+height: 100%;
+padding: 70px 24px 34px;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+color: #fff;
+text-align: center;
+background: linear-gradient(180deg, #292a30 0%, #17181d 100%);
+border-radius: 22px;
+overflow: hidden;
+}
+
+  .yuma-call-person {
+    margin-top: 36px;
+  }
+  .yuma-call-photo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #777780, #45454d);
+    font-size: 48px;
+  }
+  .yuma-call-person h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+  }
+  .yuma-call-person p {
+    margin-top: 14px;
+    color: #d0d0d5;
+    font-size: 15px;
+  }
+  .yuma-call-bottom {
+    width: 100%;
+    margin-top: auto;
+  }
+  .yuma-call-controls,
+  .yuma-call-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    justify-items: center;
+  }
+  .yuma-call-controls {
+    margin-bottom: 35px;
+  }
+  .yuma-call-actions {
+    margin-bottom: 8px;
+  }
+  .yuma-call-controls button,
+  .yuma-call-actions button {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: white;
+    font: inherit;
+  }
+  .yuma-call-controls button:disabled,
+  .yuma-call-actions button:disabled {
+    opacity: 1;
+    cursor: default;
+  }
+  .yuma-call-controls small,
+  .yuma-call-actions small {
+    color: #f5f5f7;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .call-icon {
+    box-sizing: border-box;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #414249;
+    color: white;
+  }
+  .call-icon svg {
+    width: 27px;
+    height: 27px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .call-end-icon {
+    width: 68px;
+    height: 68px;
+    background: #ff453a;
+  }
+  .call-end-icon svg {
+    width: 31px;
+    height: 31px;
+    transform: rotate(135deg);
+  }
+  @media (max-height: 650px) {
+    .yuma-call-ui {
+      padding-top: 35px;
+      padding-bottom: 20px;
+    }
+    .yuma-call-person {
+      margin-top: 10px;
+    }
+    .yuma-call-photo {
+      width: 76px;
+      height: 76px;
+      margin-bottom: 15px;
+      font-size: 38px;
+    }
+    .yuma-call-person h1 {
+      font-size: 24px;
+    }
+    .yuma-call-controls {
+      margin-bottom: 22px;
+    }
+    .call-icon {
+      width: 52px;
+      height: 52px;
+    }
+    .call-end-icon {
+      width: 60px;
+      height: 60px;
+    }
+  }
     `;
     document.head.appendChild(style);
   }
