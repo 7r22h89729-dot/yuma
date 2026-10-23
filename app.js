@@ -249,7 +249,7 @@ try {
     // 읽지 않은 유마 문자 개수
 function getUnreadYumaCount() {
 return yumaMessages.filter(
-message => message.from === “theirs” && message.unread === true
+message => message.from === "theirs" && message.unread === true
 ).length;
 }
 
@@ -647,12 +647,11 @@ content.appendChild(tabs);
 
 /* 유우마에게 가상 전화 걸기 */
 function startCall(name) {
-  if (name !== "ユウマ🐱🖤") return;
-  let callTimer = null;
-  let seconds = 0;
-  let connected = false;
-  let finished = false;
-  content.innerHTML = `
+if (name !== “ユウマ🐱🖤”) return;
+
+let finished = false;
+
+content.innerHTML = `
 🐱
 ユウマ🐱🖤
 연결 중…
@@ -661,20 +660,20 @@ function startCall(name) {
       <button type="button" disabled>
         <span class="call-icon">
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"/>
-            <path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v3m-4 0h8"/>
-          </svg>
-        </span>
-        <small>음소거</small>
-      </button>
-      <button type="button" disabled>
-        <span class="call-icon">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M4 10.5a13 13 0 0 1 16 0M7 14a8 8 0 0 1 10 0m-7 3.5a3 3 0 0 1 4 0"/>
             <circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/>
           </svg>
         </span>
         <small>스피커</small>
+      </button>
+      <button type="button" disabled>
+        <span class="call-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="3"/>
+            <path d="m9 9 6 3-6 3Z"/>
+          </svg>
+        </span>
+        <small>FaceTime</small>
       </button>
       <button type="button" disabled>
         <span class="call-icon">
@@ -717,192 +716,14 @@ function startCall(name) {
 </section>
 
 `;
-  const styleId = "yuma-call-style";
-  if (!document.getElementById(styleId)) {
-    const style = document.createElement("style");
-    style.id = styleId;
-    style.textContent = `
-      .yuma-call-ui {
-box-sizing: border-box;
-width: 100%;
-min-height: 100%;
-height: 100%;
-padding: 70px 24px 34px;
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-color: #fff;
-text-align: center;
-background: linear-gradient(180deg, #292a30 0%, #17181d 100%);
-border-radius: 22px;
-overflow: hidden;
-}
 
-  .yuma-call-person {
-    margin-top: 36px;
-  }
-  .yuma-call-photo {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: linear-gradient(145deg, #777780, #45454d);
-    font-size: 48px;
-  }
-  .yuma-call-person h1 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 600;
-  }
-  .yuma-call-person p {
-    margin-top: 14px;
-    color: #d0d0d5;
-    font-size: 15px;
-  }
-  .yuma-call-bottom {
-    width: 100%;
-    margin-top: auto;
-  }
-  .yuma-call-controls,
-  .yuma-call-actions {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: center;
-    justify-items: center;
-  }
-  .yuma-call-controls {
-    margin-bottom: 35px;
-  }
-  .yuma-call-actions {
-    margin-bottom: 8px;
-  }
-  .yuma-call-controls button,
-  .yuma-call-actions button {
-    width: 100%;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    border: 0;
-    padding: 0;
-    background: transparent;
-    color: white;
-    font: inherit;
-  }
-  .yuma-call-controls button:disabled,
-  .yuma-call-actions button:disabled {
-    opacity: 1;
-    cursor: default;
-  }
-  .yuma-call-controls small,
-  .yuma-call-actions small {
-    color: #f5f5f7;
-    font-size: 12px;
-    white-space: nowrap;
-  }
-  .call-icon {
-    box-sizing: border-box;
-    width: 62px;
-    height: 62px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #414249;
-    color: white;
-  }
-  .call-icon svg {
-    width: 27px;
-    height: 27px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  .call-end-icon {
-    width: 68px;
-    height: 68px;
-    background: #ff453a;
-  }
-  .call-end-icon svg {
-    width: 31px;
-    height: 31px;
-    transform: rotate(135deg);
-  }
-  @media (max-height: 650px) {
-    .yuma-call-ui {
-      padding-top: 35px;
-      padding-bottom: 20px;
-    }
-    .yuma-call-person {
-      margin-top: 10px;
-    }
-    .yuma-call-photo {
-      width: 76px;
-      height: 76px;
-      margin-bottom: 15px;
-      font-size: 38px;
-    }
-    .yuma-call-person h1 {
-      font-size: 24px;
-    }
-    .yuma-call-controls {
-      margin-bottom: 22px;
-    }
-    .call-icon {
-      width: 52px;
-      height: 52px;
-    }
-    .call-end-icon {
-      width: 60px;
-      height: 60px;
-    }
-  }
-    `;
-    document.head.appendChild(style);
-  }
-  const status = $("#yuma-call-status");
-  const actions = $("#yuma-call-actions");
-  const controls = $("#yuma-call-controls");
-  function answerCall() {
-    if (connected || finished) return;
-    connected = true;
-    seconds = 0;
-    actions.classList.add("hidden");
-    controls.classList.remove("hidden");
-    status.textContent = "00:00";
-    callTimer = setInterval(() => {
-      seconds++;
-      const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
-      const secs = String(seconds % 60).padStart(2, "0");
-      status.textContent = `${minutes}:${secs}`;
-    }, 1000);
-  }
-  function finishCall() {
-    if (finished) return;
-    finished = true;
-    clearInterval(callTimer);
-    if (connected) {
-      const history = callHistory();
-      history.push({
-        name: "ユウマ🐱🖤",
-        detail: new Date().toLocaleString("ko-KR")
-      });
-      save("yumaCallHistory", history);
-    }
-    renderPhone("recent");
-    if (connected) {
-      showToast("통화가 종료되었습니다.");
-    } else {
-      showToast("전화를 거절했습니다.");
-    }
-  }
+$("#yuma-end").addEventListener(“click”, () => {
+if (finished) return;
+finished = true;
+renderPhone("recent");
+showToast("통화가 종료되었습니다.");
+});
+}
 $("#yuma-end").addEventListener("click", finishCall);
   $("#yuma-speaker").addEventListener("click", () => {
     showToast("가상 통화에서는 스피커 상태만 변경할 수 있어요.");
