@@ -72,17 +72,18 @@ overflow: hidden;
 
 .lock-screen,
 .home-screen {
-background-image:
-linear-gradient(
-to bottom,
-rgba(0, 0, 0, 0.12),
-rgba(0, 0, 0, 0.02) 35%,
-rgba(0, 0, 0, 0.08)
-),
-url(“BDF00F0C-F33B-4413-A2A5-A9405E51F740.jpeg”);
-background-size: cover;
-background-position: center;
-background-repeat: no-repeat;
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.12),
+      rgba(0, 0, 0, 0.02) 35%,
+      rgba(0, 0, 0, 0.08)
+    ),
+    url("./BDF00F0C-F33B-4413-A2A5-A9405E51F740.jpeg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 /* ==============================
