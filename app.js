@@ -241,74 +241,85 @@ try {
   }
 
   function showToast(message) {
-    const toast = $("#toast");
-    if (!toast) {
-      console.log(message);
-      return;
-    }
-    // 읽지 않은 유마 문자 개수
+  const toast = $("#toast");
+
+  if (!toast) {
+    console.log(message);
+    return;
+  }
+
+  toast.textContent = message;
+  toast.classList.remove("hidden");
+  toast.classList.add("show");
+
+  clearTimeout(toastTimeout);
+
+  toastTimeout = setTimeout(() => {
+    toast.classList.remove("show");
+    toast.classList.add("hidden");
+  }, 2200);
+}
+
+// 읽지 않은 유마 문자 개수
 function getUnreadYumaCount() {
-return yumaMessages.filter(
-message => message.from === "theirs" && message.unread === true
-).length;
+  return yumaMessages.filter(
+    message => message.from === "theirs" && message.unread === true
+  ).length;
 }
 
 // 홈 화면 문자 앱 배지 갱신
 function updateMessageBadge() {
-const count = getUnreadYumaCount();
-let badge = document.querySelector(”#messages-badge”);
+  const count = getUnreadYumaCount();
+  let badge = document.querySelector("#messages-badge");
 
-if (!badge) {
-  const messagesApp = document.querySelector('[data-app="messages"]');
-  if (messagesApp) {
-    badge = document.createElement("span");
-    badge.id = "messages-badge";
-    badge.className = "notification-badge";
-    messagesApp.appendChild(badge);
+  if (!badge) {
+    const messagesApp = document.querySelector('[data-app="messages"]');
+
+    if (messagesApp) {
+      badge = document.createElement("span");
+      badge.id = "messages-badge";
+      badge.className = "notification-badge";
+      messagesApp.appendChild(badge);
+    }
   }
-}
-if (!badge) return;
-badge.textContent = count > 99 ? "99+" : String(count);
-badge.classList.toggle("hidden", count === 0);
-badge.setAttribute("aria-label", `읽지 않은 문자 ${count}개`);
 
+  if (!badge) return;
+
+  badge.textContent = count > 99 ? "99+" : String(count);
+  badge.classList.toggle("hidden", count === 0);
+  badge.setAttribute("aria-label", `읽지 않은 문자 ${count}개`);
 }
 
 // 문자 알림 표시
 function showMessageNotification(message) {
-const old = document.getElementById(“yuma-message-notification”);
-if (old) old.remove();
+  const old = document.getElementById("yuma-message-notification");
+  if (old) old.remove();
 
-const notification = document.createElement("button");
-notification.type = "button";
-notification.id = "yuma-message-notification";
-notification.className = "yuma-message-notification";
-const title = document.createElement("strong");
-title.textContent = "メッセージ";
-const sender = document.createElement("small");
-sender.textContent = "ユウマ🐱🖤";
-const text = document.createElement("span");
-text.textContent = message;
-notification.append(title, sender, text);
-notification.addEventListener("click", () => {
-  notification.remove();
-  openApp("messages");
-  renderChat("messages", "yuma");
-});
-document.body.appendChild(notification);
-setTimeout(() => notification.remove(), 4000);
+  const notification = document.createElement("button");
+  notification.type = "button";
+  notification.id = "yuma-message-notification";
+  notification.className = "yuma-message-notification";
 
+  const title = document.createElement("strong");
+  title.textContent = "メッセージ";
+
+  const sender = document.createElement("small");
+  sender.textContent = "ユウマ🐱🖤";
+
+  const text = document.createElement("span");
+  text.textContent = message;
+
+  notification.append(title, sender, text);
+
+  notification.addEventListener("click", () => {
+    notification.remove();
+    openApp("messages");
+    renderChat("messages", "yuma");
+  });
+
+  document.body.appendChild(notification);
+  setTimeout(() => notification.remove(), 4000);
 }
-    toast.textContent = message;
-    toast.classList.remove("hidden");
-    toast.classList.add("show");
-    clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(() => {
-      toast.classList.remove("show");
-      toast.classList.add("hidden");
-    }, 2200);
-  }
-
   /* 메시지 목록: 유마와 엄마 채팅방 모두 유지 */
   function renderMessages() {
     setTitle("메시지");
@@ -647,7 +658,7 @@ content.appendChild(tabs);
 
 /* 유우마에게 가상 전화 걸기 */
 function startCall(name) {
-if (name !== “ユウマ🐱🖤”) return;
+if (name !== "ユウマ🐱🖤") return;
 
 let finished = false;
 
@@ -724,15 +735,6 @@ renderPhone("recent");
 showToast("통화가 종료되었습니다.");
 });
 }
-$("#yuma-end").addEventListener("click", finishCall);
-  $("#yuma-speaker").addEventListener("click", () => {
-    showToast("가상 통화에서는 스피커 상태만 변경할 수 있어요.");
-  });
-  $("#yuma-keypad").addEventListener("click", () => {
-    showToast("키패드는 아직 준비 중이에요.");
-  });
-}
-
 /* 상단 알림 표시 */
 function showCallNotification() {
 const old = document.getElementById("yuma-call-notification");
