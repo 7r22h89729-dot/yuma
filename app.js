@@ -53,30 +53,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 유마 대화는 기존 저장 데이터를 그대로 유지합니다.
   let yumaMessages = read("yumaMessages", initialData.messages || []);
-  let yumaKakao = read("yumaKakao", initialData.kakao || []);
-// 유마의 새 문자 3개는 기존 기록에 한 번만 추가합니다.
+  let yumaKakao = read("yumaKakao", initialData.kakao || []);// 유마의 새 문자 3개는 기존 기록에 한 번만 추가합니다.
 try {
-if (localStorage.getItem(“yumaNewTextsV1”) !== “done”) {
-const newTexts = [
-“ㅋㅋㅋㅋㅋ잘햇엉”,
-“잘잤어?”,
-“😚😚”
-];
-  const now = Date.now();
-  newTexts.forEach((text, index) => {
-    yumaMessages.push({
-      from: "theirs",
-      sender: "ユウマ🐱🖤",
-      text,
-      time: new Date(now + index * 1000).toISOString()
+  if (localStorage.getItem("yumaNewTextsV1") !== "done") {
+    const newTexts = [
+      "ㅋㅋㅋㅋㅋ잘햇엉",
+      "잘잤어?",
+      "😚😚"
+    ];
+    const now = Date.now();
+    newTexts.forEach((text, index) => {
+      yumaMessages.push({
+        from: "theirs",
+        sender: "ユウマ🐱🖤",
+        text,
+        time: new Date(now + index * 1000).toISOString()
+      });
     });
-  });
-  save("yumaMessages", yumaMessages);
-  localStorage.setItem("yumaNewTextsV1", "done");
-}
-
+    save("yumaMessages", yumaMessages);
+    localStorage.setItem("yumaNewTextsV1", "done");
+  }
 } catch (error) {
-console.error(“유마 문자 초기화 오류:”, error);
+  console.error("유마 문자 초기화 오류:", error);
 }
   const requestedMomMessages = [
     { from: "theirs", sender: "엄마", text: "딸~~~ 밥 먹었어?", time: "2026-10-23T12:00:00" },
