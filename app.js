@@ -1259,5 +1259,368 @@ document.addEventListener("DOMContentLoaded", () => {
         showToast("검색 기능은 준비 중입니다.");
       } else if (next === "reels") {
         showToast("릴스는 준비 중입니다.");
-      } else {
-        render
+      renderInstagram(next);
+}
+}));
+}
+
+/* ———————————
+설정 앱
+——————————— */
+
+function renderSettings() {
+setTitle(“설정”);
+setView(“settings-home”);
+
+content.innerHTML = `
+  <section class="ios-page ios-settings-page">
+    <h2 class="ios-large-title">설정</h2>
+    <div class="ios-settings-profile">
+      <div class="ios-avatar">🐱</div>
+      <div>
+        <strong>YUMA SIMULATION</strong>
+        <small>가상 팬 시뮬레이션</small>
+      </div>
+      <span>›</span>
+    </div>
+    <div class="ios-settings-group">
+      <button class="ios-settings-row" id="setting-wallpaper">
+        <span>🌈</span><span>배경화면</span><b>›</b>
+      </button>
+      <button class="ios-settings-row" id="setting-notifications">
+        <span>🔔</span><span>알림</span><b>›</b>
+      </button>
+      <button class="ios-settings-row" id="setting-sound">
+        <span>🔊</span><span>사운드 및 햅틱</span><b>›</b>
+      </button>
+      <button class="ios-settings-row" id="setting-about">
+        <span>ⓘ</span><span>이 시뮬레이션에 관하여</span><b>›</b>
+      </button>
+    </div>
+    <p class="ios-muted ios-settings-note">
+      실제 전화, 메시지, SNS 계정과 연결되지 않는 팬 시뮬레이션입니다.
+    </p>
+  </section>
+`;
+$("#setting-wallpaper").addEventListener("click", () => {
+  showToast("배경화면은 기존 홈 화면 설정을 사용합니다.");
+});
+$("#setting-notifications").addEventListener("click", () => {
+  showToast("알림 기능은 준비 중입니다.");
+});
+$("#setting-sound").addEventListener("click", () => {
+  showToast("사운드 설정은 준비 중입니다.");
+});
+$("#setting-about").addEventListener("click", () => {
+  alert("YUMA SIMULATION\n유마와의 일상을 상상하며 즐기는 가상 팬 시뮬레이션입니다.");
+});
+
+}
+
+/* ———————————
+카메라 앱
+——————————— */
+
+function renderCamera() {
+setTitle(“카메라”);
+setView(“camera-home”);
+
+content.innerHTML = `
+  <section class="ios-camera-page">
+    <div class="ios-camera-preview" id="camera-preview">
+      <div class="ios-camera-message">
+        <span>📷</span>
+        <p>카메라</p>
+        <small>아래 버튼으로 사진을 선택할 수 있어요.</small>
+      </div>
+    </div>
+    <div class="ios-camera-controls">
+      <label class="ios-camera-album" for="camera-file">▧</label>
+      <button class="ios-camera-shutter" id="camera-shutter" aria-label="사진 촬영"></button>
+      <button class="ios-camera-switch" id="camera-switch">↻</button>
+    </div>
+    <input type="file" id="camera-file" accept="image/*" hidden>
+    <p class="ios-camera-caption">사진은 직접 선택한 경우에만 보관함에 추가됩니다.</p>
+  </section>
+`;
+$("#camera-file").addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    showToast("이미지 파일을 선택해 주세요.");
+    return;
+  }
+  try {
+    const dataURL = await fileToDataURL(file);
+    const photos = uploadedPhotos();
+    photos.push({
+      id: `${Date.now()}-${Math.random()}`,
+      name: file.name,
+      dataURL,
+      addedAt: new Date().toISOString()
+    });
+    save("yumaUploadedPhotos", photos);
+    const preview = $("#camera-preview");
+    preview.innerHTML = `<img src="${dataURL}" alt="선택한 사진">`;
+    showToast("사진 보관함에 저장했어요!");
+  } catch {
+    showToast("사진을 불러오지 못했어요.");
+  }
+});
+$("#camera-shutter").addEventListener("click", () => {
+  $("#camera-file").click();
+});
+$("#camera-switch").addEventListener("click", () => {
+  showToast("가상 카메라에서는 사진 선택 기능을 이용해 주세요.");
+});
+
+}
+
+function stopCamera() {
+if (cameraStream) {
+cameraStream.getTracks().forEach((track) => track.stop());
+cameraStream = null;
+}
+}
+
+/* ———————————
+시계 앱
+——————————— */
+
+function renderClock(tab = “world”) {
+stopClockTools();
+
+setTitle("시계");
+setView(`clock-${tab}`);
+content.innerHTML = "";
+const page = card("ios-page ios-clock-page");
+page.appendChild(heading(
+  tab === "world" ? "세계 시계" :
+  tab === "alarm" ? "알람" :
+  tab === "stopwatch" ? "스톱워치" : "타이머"
+));
+if (tab === "world") {
+  const now = new Date();
+  const local = document.createElement("div");
+  local.className = "ios-clock-city";
+  local.innerHTML = `
+    <div>
+      <strong>서울</strong>
+      <small>대한민국</small>
+    </div>
+    <span id="clock-seoul"></span>
+  `;
+  page.appendChild(local);
+  const tokyo = document.createElement("div");
+  tokyo.className = "ios-clock-city";
+  tokyo.innerHTML = `
+    <div>
+      <strong>도쿄</strong>
+      <small>일본</small>
+    </div>
+    <span id="clock-tokyo"></span>
+  `;
+  page.appendChild(tokyo);
+  function updateClocks() {
+    const seoul = $("#clock-seoul");
+    const japan = $("#clock-tokyo");
+    if (seoul) {
+      seoul.textContent = new Date().toLocaleTimeString("ko-KR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Seoul"
+      });
+    }
+    if (japan) {
+      japan.textContent = new Date().toLocaleTimeString("ja-JP", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Tokyo"
+      });
+    }
+  }
+  updateClocks();
+  clockInterval = setInterval(updateClocks, 1000);
+}
+if (tab === "alarm") {
+  const alarm = document.createElement("div");
+  alarm.className = "ios-alarm-form";
+  alarm.innerHTML = `
+    <p class="ios-muted">알람 시간 설정</p>
+    <input type="time" id="alarm-time" value="07:00">
+    <button class="ios-primary-button" id="alarm-save">알람 설정</button>
+    <p id="alarm-status" class="ios-muted">알람이 설정되지 않았습니다.</p>
+  `;
+  page.appendChild(alarm);
+  $("#alarm-save", alarm).addEventListener("click", () => {
+    const time = $("#alarm-time", alarm).value;
+    if (!time) {
+      showToast("시간을 선택해 주세요.");
+      return;
+    }
+    save("yumaAlarm", time);
+    $("#alarm-status", alarm).textContent = `${time} 알람 설정 완료`;
+  });
+  const savedAlarm = read("yumaAlarm", null);
+  if (savedAlarm) {
+    $("#alarm-time", alarm).value = savedAlarm;
+    $("#alarm-status", alarm).textContent = `${savedAlarm} 알람 설정 완료`;
+  }
+}
+if (tab === "stopwatch") {
+  page.innerHTML += `
+    <div class="ios-timer-display" id="stopwatch-display">00:00.00</div>
+    <div class="ios-timer-buttons">
+      <button class="ios-secondary-button" id="stopwatch-reset">재설정</button>
+      <button class="ios-primary-button" id="stopwatch-start">시작</button>
+    </div>
+  `;
+  let running = false;
+  $("#stopwatch-start", page).addEventListener("click", () => {
+    running = !running;
+    $("#stopwatch-start", page).textContent = running ? "일시 정지" : "시작";
+    if (running) {
+      stopwatchInterval = setInterval(() => {
+        stopwatchSeconds += 0.01;
+        const minutes = Math.floor(stopwatchSeconds / 60);
+        const seconds = Math.floor(stopwatchSeconds % 60);
+        const hundredths = Math.floor((stopwatchSeconds % 1) * 100);
+        const display = $("#stopwatch-display", page);
+        if (display) {
+          display.textContent =
+            `${String(minutes).padStart(2, "0")}:` +
+            `${String(seconds).padStart(2, "0")}.` +
+            `${String(hundredths).padStart(2, "0")}`;
+        }
+      }, 10);
+    } else {
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = null;
+    }
+  });
+  $("#stopwatch-reset", page).addEventListener("click", () => {
+    clearInterval(stopwatchInterval);
+    stopwatchInterval = null;
+    stopwatchSeconds = 0;
+    running = false;
+    $("#stopwatch-display", page).textContent = "00:00.00";
+    $("#stopwatch-start", page).textContent = "시작";
+  });
+}
+if (tab === "timer") {
+  page.innerHTML += `
+    <div class="ios-timer-display" id="timer-display">01:00</div>
+    <div class="ios-timer-form">
+      <label>
+        분
+        <input type="number" id="timer-minutes" value="1" min="0" max="999">
+      </label>
+      <label>
+        초
+        <input type="number" id="timer-secs" value="0" min="0" max="59">
+      </label>
+    </div>
+    <div class="ios-timer-buttons">
+      <button class="ios-secondary-button" id="timer-reset">재설정</button>
+      <button class="ios-primary-button" id="timer-start">시작</button>
+    </div>
+  `;
+  let running = false;
+  $("#timer-start", page).addEventListener("click", () => {
+    if (running) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      running = false;
+      $("#timer-start", page).textContent = "계속";
+      return;
+    }
+    if (timerSeconds <= 0) {
+      const minutes = Number($("#timer-minutes", page).value) || 0;
+      const seconds = Number($("#timer-secs", page).value) || 0;
+      timerSeconds = Math.max(0, minutes * 60 + seconds);
+    }
+    if (timerSeconds <= 0) {
+      showToast("타이머 시간을 설정해 주세요.");
+      return;
+    }
+    running = true;
+    $("#timer-start", page).textContent = "일시 정지";
+    timerInterval = setInterval(() => {
+      timerSeconds--;
+      const display = $("#timer-display", page);
+      if (display) {
+        display.textContent =
+          `${String(Math.floor(timerSeconds / 60)).padStart(2, "0")}:` +
+          `${String(timerSeconds % 60).padStart(2, "0")}`;
+      }
+      if (timerSeconds <= 0) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        running = false;
+        $("#timer-start", page).textContent = "시작";
+        showToast("타이머가 종료되었습니다!");
+      }
+    }, 1000);
+  });
+  $("#timer-reset", page).addEventListener("click", () => {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timerSeconds = 0;
+    running = false;
+    $("#timer-display", page).textContent = "01:00";
+    $("#timer-minutes", page).value = 1;
+    $("#timer-secs", page).value = 0;
+    $("#timer-start", page).textContent = "시작";
+  });
+}
+content.appendChild(page);
+content.appendChild(showTabs([
+  { id: "world", label: "세계 시계", icon: "◷" },
+  { id: "alarm", label: "알람", icon: "◴" },
+  { id: "stopwatch", label: "스톱워치", icon: "⏱" },
+  { id: "timer", label: "타이머", icon: "◴" }
+], tab, renderClock));
+
+}
+
+function stopClockTools() {
+if (clockInterval) {
+clearInterval(clockInterval);
+clockInterval = null;
+}
+
+if (stopwatchInterval) {
+  clearInterval(stopwatchInterval);
+  stopwatchInterval = null;
+}
+if (timerInterval) {
+  clearInterval(timerInterval);
+  timerInterval = null;
+}
+
+}
+
+/* ———————————
+토스트 메시지
+——————————— */
+
+function showToast(message) {
+const toast = $(”#toast”);
+
+if (!toast) {
+  console.log(message);
+  return;
+}
+toast.textContent = message;
+toast.classList.remove("hidden");
+toast.classList.add("show");
+clearTimeout(showToast.timeout);
+showToast.timeout = setTimeout(() => {
+  toast.classList.remove("show");
+  toast.classList.add("hidden");
+}, 2200);
+
+}
+});
