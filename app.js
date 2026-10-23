@@ -461,7 +461,7 @@ if (!isKakao && person === "yuma") {
     });
   }// 유마 자동 답장
 function scheduleYumaReply(userText) {
-const normalized = userText.replace(/\s+/g, “”);
+const normalized = userText.replace(/\s+/g, "");
 
 let replies = [];
 if (
