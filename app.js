@@ -451,7 +451,7 @@ if (!isKakao && person === "yuma") {
   }
   // 유마 자동 답장
 function scheduleYumaReply(userText) {
-const normalized = userText.replace(/\s+/g, “”);
+const normalized = userText.replace(/\s+/g, "");
 
 let replies = [];
 if (normalized.includes("이제일어났어") || normalized.includes("일어났어")) {
