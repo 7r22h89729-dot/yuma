@@ -7,158 +7,154 @@
   <title>YUMA SIMULATION</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 <div id="app">
-
   <!-- 잠금 화면 -->
   <section id="lock-screen" class="screen lock-screen">
-    <div class="status">
+<div class="status">
   <span id="status-time">22:24</span>
   <span class="status-icons">
-    <span class="signal-icon">●●●</span>
-    <span class="wifi-icon">◔</span>
-    <span class="battery-icon">
+    <span class="signal-icon" aria-label="통신 신호">
+      <span></span><span></span><span></span><span></span>
+    </span>
+    <span class="wifi-icon" aria-label="Wi-Fi">
+      <span class="wifi-arc wifi-arc-1"></span>
+      <span class="wifi-arc wifi-arc-2"></span>
+      <span class="wifi-arc wifi-arc-3"></span>
+      <span class="wifi-dot"></span>
+    </span>
+    <span class="battery-icon" aria-label="배터리">
       <span class="battery-level"></span>
     </span>
   </span>
 </div>
-
-    <div class="lock-date" id="lock-date"></div>
-    <div class="lock-time" id="lock-time">22:24</div>
-
-    <div class="lock-subtitle">잠금 해제하여 계속하기</div>
-
-    <div class="passcode-box">
-      <p>암호를 입력하세요</p>
-      <div class="dots" id="pass-dots">○ ○ ○ ○</div>
-      <div class="keypad" id="keypad"></div>
-      <button class="text-button" id="delete-key">지우기</button>
-    </div>
-
-    <p class="tiny-note">가상 팬 시뮬레이션입니다.</p>
+<!-- 잠금 화면 날짜와 요일 유지 -->
+<div class="lock-date" id="lock-date"></div>
+<div class="lock-time" id="lock-time">22:24</div>
+<div class="lock-subtitle">잠금 해제하여 계속하기</div>
+<div class="passcode-box">
+  <p>암호를 입력하세요</p>
+  <div class="dots" id="pass-dots">○ ○ ○ ○</div>
+  <div class="keypad" id="keypad"></div>
+  <button class="text-button" id="delete-key">지우기</button>
+</div>
+<p class="tiny-note">가상 팬 시뮬레이션입니다.</p>
   </section>
-
   <!-- 홈 화면 -->
   <section id="home-screen" class="screen home-screen hidden">
-  <div class="status">
-  <span id="status-time">22:24</span>
+<div class="status">
+  <span id="home-time">22:24</span>
   <span class="status-icons">
-    <span class="signal-icon">●●●</span>
-    <span class="wifi-icon">◔</span>
-    <span class="battery-icon">
+    <span class="signal-icon" aria-label="통신 신호">
+      <span></span><span></span><span></span><span></span>
+    </span>
+    <span class="wifi-icon" aria-label="Wi-Fi">
+      <span class="wifi-arc wifi-arc-1"></span>
+      <span class="wifi-arc wifi-arc-2"></span>
+      <span class="wifi-arc wifi-arc-3"></span>
+      <span class="wifi-dot"></span>
+    </span>
+    <span class="battery-icon" aria-label="배터리">
       <span class="battery-level"></span>
     </span>
   </span>
 </div>
-
-    <div class="home-date" id="home-date"></div>
-
-    <div class="app-grid">
-
-      <button class="app-icon" data-app="photos">
-        <img class="icon-image" src="IMG_4900.jpeg" alt="사진">
-        <span>사진</span>
-      </button>
-
-      <button class="app-icon" data-app="phone">
-        <img class="icon-image" src="IMG_4901.jpeg" alt="전화">
-        <span>전화</span>
-      </button>
-
-      <button class="app-icon" data-app="messages">
-        <img class="icon-image" src="IMG_4902.jpeg" alt="메시지">
-        <span>메시지</span>
-      </button>
-
-      <button class="app-icon" data-app="kakao">
-        <img class="icon-image" src="IMG_4910.jpeg" alt="카카오톡">
-        <span>KakaoTalk</span>
-      </button>
-
-      <button class="app-icon" data-app="calendar">
-        <img class="icon-image" src="IMG_4907.jpeg" alt="캘린더">
-        <span>캘린더</span>
-      </button>
-
-      <button class="app-icon" data-app="music">
-        <img class="icon-image" src="IMG_4903.jpeg" alt="음악">
-        <span>음악</span>
-      </button>
-
-      <button class="app-icon" data-app="instagram">
-        <img class="icon-image" src="IMG_4904.jpeg" alt="인스타그램">
-        <span>Instagram</span>
-      </button>
-
-      <button class="app-icon" data-app="settings">
-        <img class="icon-image" src="IMG_4909.jpeg" alt="설정">
-        <span>설정</span>
-      </button>
-
-      <button class="app-icon" data-app="camera">
-        <img class="icon-image" src="IMG_4899.jpeg" alt="카메라">
-        <span>카메라</span>
-      </button>
-
-      <button class="app-icon" data-app="clock">
-        <img class="icon-image" src="IMG_4906.jpeg" alt="시계">
-        <span>시계</span>
-      </button>
-
-    </div>
-
-    <!-- 하단 독 -->
-    <div class="dock">
-      <button class="dock-icon" data-app="phone" aria-label="전화">
-        <img src="IMG_4901.jpeg" alt="">
-      </button>
-
-      <button class="dock-icon" data-app="messages" aria-label="메시지">
-        <img src="IMG_4902.jpeg" alt="">
-      </button>
-
-      <button class="dock-icon" data-app="kakao" aria-label="카카오톡">
-        <img src="IMG_4910.jpeg" alt="">
-      </button>
-
-      <button class="dock-icon" data-app="instagram" aria-label="인스타그램">
-        <img src="IMG_4904.jpeg" alt="">
-      </button>
-    </div>
+<!-- 홈 화면 날짜는 CSS에서 숨김 -->
+<div class="home-date" id="home-date"></div>
+<!-- 앱 아이콘 -->
+<div class="app-grid">
+  <button class="app-icon" data-app="photos">
+    <img class="icon-image" src="IMG_4900.jpeg" alt="사진">
+    <span>사진</span>
+  </button>
+  <button class="app-icon" data-app="phone">
+    <img class="icon-image" src="IMG_4901.jpeg" alt="전화">
+    <span>전화</span>
+  </button>
+  <button class="app-icon" data-app="messages">
+    <img class="icon-image" src="IMG_4902.jpeg" alt="메시지">
+    <span>메시지</span>
+  </button>
+  <button class="app-icon" data-app="kakao">
+    <img class="icon-image" src="IMG_4910.jpeg" alt="카카오톡">
+    <span>KakaoTalk</span>
+  </button>
+  <button class="app-icon" data-app="calendar">
+    <img class="icon-image" src="IMG_4907.jpeg" alt="캘린더">
+    <span>캘린더</span>
+  </button>
+  <button class="app-icon" data-app="music">
+    <img class="icon-image" src="IMG_4903.jpeg" alt="음악">
+    <span>음악</span>
+  </button>
+  <button class="app-icon" data-app="instagram">
+    <img class="icon-image" src="IMG_4904.jpeg" alt="인스타그램">
+    <span>Instagram</span>
+  </button>
+  <button class="app-icon" data-app="settings">
+    <img class="icon-image" src="IMG_4909.jpeg" alt="설정">
+    <span>설정</span>
+  </button>
+  <button class="app-icon" data-app="camera">
+    <img class="icon-image" src="IMG_4899.jpeg" alt="카메라">
+    <span>카메라</span>
+  </button>
+  <button class="app-icon" data-app="clock">
+    <img class="icon-image" src="IMG_4906.jpeg" alt="시계">
+    <span>시계</span>
+  </button>
+</div>
+<!-- 하단 독 -->
+<div class="dock">
+  <button class="dock-icon" data-app="phone" aria-label="전화">
+    <img src="IMG_4901.jpeg" alt="">
+  </button>
+  <button class="dock-icon" data-app="messages" aria-label="메시지">
+    <img src="IMG_4902.jpeg" alt="">
+  </button>
+  <button class="dock-icon" data-app="kakao" aria-label="카카오톡">
+    <img src="IMG_4910.jpeg" alt="">
+  </button>
+  <button class="dock-icon" data-app="instagram" aria-label="인스타그램">
+    <img src="IMG_4904.jpeg" alt="">
+  </button>
+</div>
   </section>
-
   <!-- 앱 화면 -->
   <section id="app-screen" class="screen app-screen hidden">
-
-    <div class="app-status">
-      <span id="app-time">22:24</span>
-      <span>▮▮▮ ◉ 49%</span>
-    </div>
-
-    <header class="app-header">
-      <button id="back-home" aria-label="홈으로">‹</button>
-      <h1 id="app-title">메시지</h1>
-      <span></span>
-    </header>
-
-    <main id="app-content"></main>
-
-    <div class="home-indicator" id="home-indicator"></div>
+<div class="app-status">
+  <span id="app-time">22:24</span>
+  <span class="app-status-icons">
+    <span class="signal-icon" aria-label="통신 신호">
+      <span></span><span></span><span></span><span></span>
+    </span>
+    <span class="wifi-icon" aria-label="Wi-Fi">
+      <span class="wifi-arc wifi-arc-1"></span>
+      <span class="wifi-arc wifi-arc-2"></span>
+      <span class="wifi-arc wifi-arc-3"></span>
+      <span class="wifi-dot"></span>
+    </span>
+    <span class="battery-icon" aria-label="배터리">
+      <span class="battery-level"></span>
+    </span>
+  </span>
+</div>
+<header class="app-header">
+  <button id="back-home" aria-label="홈으로">‹</button>
+  <h1 id="app-title">메시지</h1>
+  <span></span>
+</header>
+<main id="app-content"></main>
+<div class="home-indicator" id="home-indicator"></div>
   </section>
-
+  <!-- 안내 메시지 -->
   <div id="toast" class="toast hidden">
     해당 사이트는 가상 시뮬레이션입니다.
   </div>
-
 </div>
-
+<!-- JavaScript 파일 -->
 <script src="data.js"></script>
 <script src="auth.js"></script>
 <script src="app.js"></script>
-}
-
 </body>
 </html>
-
-
