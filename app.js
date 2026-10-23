@@ -411,97 +411,138 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* 전화 */
-  function renderPhone(tab = "recent") {
-    setTitle("전화");
-    setView(`phone-${tab}`);
-    content.innerHTML = "";
+/* 전화 앱: 최근 통화 */
+function renderPhone(tab = “recent”) {
+setTitle(“전화”);
+setView(phone-${tab});
+content.innerHTML = “”;
 
-    const page = card("ios-page phone-page");
-    const tabs = [
-      {id:"favorites",label:"즐겨찾기",icon:"★"},
-      {id:"recent",label:"최근 통화",icon:"◷"},
-      {id:"contacts",label:"연락처",icon:"♙"},
-      {id:"keypad",label:"키패드",icon:"▦"}
-    ];
-
-    page.appendChild(heading(
-      tab === "recent" ? "최근 통화" :
-      tab === "contacts" ? "연락처" :
-      tab === "favorites" ? "즐겨찾기" : "키패드"
-    ));
-
-    if (tab === "recent") {
-      const list = card();
-      const calls = [
-        ...callHistory(),
-        ...(initialData.phoneCalls || []).map(call => ({
-          name: call[0],
-          detail: `${call[1]} · ${call[2]}`
-        }))
-      ];
-
-      if (!calls.length) {
-        const empty = document.createElement("p");
-        empty.className = "ios-empty";
-        empty.textContent = "최근 통화가 없습니다.";
-        list.appendChild(empty);
-      }
-
-      calls.forEach(call => {
-        list.appendChild(makeRow(
-          "☎",
-          call.name || "알 수 없음",
-          call.detail || "최근 통화",
-          () => startCall(call.name || "유마")
-        ));
-      });
-
-      page.appendChild(list);
-    }
-
-    if (tab === "contacts" || tab === "favorites") {
-      const list = card();
-
-      [["🐱","ユウマ🐱🖤","즐겨찾기"],["🌷","민서","친구"]].forEach(([icon,name,detail]) => {
-        list.appendChild(makeRow(icon, name, detail, () => startCall(name)));
-      });
-
-      page.appendChild(list);
-    }
-
-    if (tab === "keypad") {
-      const dial = document.createElement("div");
-      dial.className = "ios-dialer";
-      dial.innerHTML = `<input id="dial-number" class="ios-dial-number" placeholder="전화번호" readonly><div class="ios-dial-grid"></div><button class="ios-call-button" id="dial-call">☎</button>`;
-
-      const grid = $(".ios-dial-grid", dial);
-
-      ["1","2","3","4","5","6","7","8","9","*","0","#"].forEach(number => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.textContent = number;
-        button.addEventListener("click", () => {
-          $("#dial-number", dial).value += number;
-        });
-        grid.appendChild(button);
-      });
-
-      $("#dial-call", dial).addEventListener("click", () => {
-        showToast("가상 키패드입니다. 실제 전화는 걸리지 않습니다.");
-      });
-
-      page.appendChild(dial);
-    }
-
-    content.appendChild(page);
-    content.appendChild(showTabs(tabs, tab, renderPhone));
+const page = card("ios-page phone-page");
+page.innerHTML = `
+  <div class="phone-topbar">
+    <span>편집</span>
+    <span class="phone-topbar-title">최근 통화</span>
+    <span></span>
+  </div>
+  <h2 class="ios-large-title">최근 통화</h2>
+  <div class="phone-filter">
+    <button class="selected" type="button" disabled>전체</button>
+    <button type="button" disabled>부재중</button>
+  </div>
+  <div class="phone-call-list" id="phone-call-list"></div>
+`;
+const list = $("#phone-call-list", page);
+// 유우마 기록만 누를 수 있습니다.
+const calls = [
+  { name: "ユウマ🐱🖤", detail: "발신 통화", time: "오늘", avatar: "🐱", enabled: true },
+  { name: "민서", detail: "수신 통화", time: "어제", avatar: "🌷", enabled: false },
+  { name: "엄마", detail: "발신 통화", time: "어제", avatar: "", enabled: false }
+];
+calls.forEach(call => {
+  const row = document.createElement("button");
+  row.type = "button";
+  row.className = "phone-call-row";
+  row.disabled = !call.enabled;
+  const avatar = document.createElement("span");
+  avatar.className = "phone-call-avatar";
+  avatar.textContent = call.avatar || "👤";
+  const info = document.createElement("span");
+  info.className = "phone-call-info";
+  info.innerHTML = `
+    <strong>${escapeHTML(call.name)}</strong>
+    <small>${escapeHTML(call.detail)}</small>
+  `;
+  const detail = document.createElement("span");
+  detail.className = "phone-call-time";
+  detail.innerHTML = `
+    <span>${escapeHTML(call.time)}</span>
+    <span class="phone-call-chevron">ⓘ</span>
+  `;
+  row.append(avatar, info, detail);
+  if (call.enabled) {
+    row.addEventListener("click", () => startCall(call.name));
   }
+  list.appendChild(row);
+});
+content.appendChild(page);
+// 탭은 아이폰처럼 표시하되 모두 비활성화합니다.
+const tabs = document.createElement("nav");
+tabs.className = "ios-tab-bar phone-disabled-tabs";
+[
+  ["★", "즐겨찾기"],
+  ["◷", "최근 통화"],
+  ["♙", "연락처"],
+  ["▦", "키패드"],
+  ["◉", "음성 사서함"]
+].forEach(([icon, label]) => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.disabled = true;
+  button.innerHTML = `<span class="tab-symbol">${icon}</span><span>${label}</span>`;
+  if (label === "최근 통화") button.classList.add("active");
+  tabs.appendChild(button);
+});
+content.appendChild(tabs);
 
-  function startCall(name) {
-    if (!/ユウマ|유마|yuma/i.test(name)) {
-      showToast("이 연락처는 가상 통화 기능을 지원하지 않습니다.");
-      return;
+}
+
+/* 유우마에게 가상 전화 걸기 */
+function startCall(name) {
+if (name !== “ユウマ🐱🖤”) return;
+
+content.innerHTML = `
+  <section class="ios-call-screen phone-active-call">
+    <div class="ios-avatar ios-call-avatar">🐱</div>
+    <h2>ユウマ🐱🖤</h2>
+    <p id="call-state">呼び出し中…</p>
+    <p class="ios-muted">가상 통화</p>
+    <button id="end-call" class="ios-call-end" type="button" aria-label="통화 종료">☎</button>
+  </section>
+`;
+let ended = false;
+const finishCall = () => {
+  if (ended) return;
+  ended = true;
+  clearTimeout(callTimeout);
+  save("yumaCallHistory", [
+    ...callHistory(),
+    {
+      name: "ユウマ🐱🖤",
+      detail: new Date().toLocaleString("ko-KR")
     }
+  ]);
+  renderPhone("recent");
+  showCallNotification();
+};
+const callTimeout = setTimeout(finishCall, 3000);
+$("#end-call").addEventListener("click", finishCall);
+
+}
+
+/* 상단 알림 표시 */
+function showCallNotification() {
+const old = document.getElementById(“yuma-call-notification”);
+if (old) old.remove();
+
+const notification = document.createElement("div");
+notification.id = "yuma-call-notification";
+notification.className = "yuma-call-notification";
+notification.innerHTML = `
+  <span class="yuma-notification-icon">🐱</span>
+  <span>
+    <strong>電話</strong>
+    <small>ユウマ🐱🖤에게 연습중!</small>
+  </span>
+`;
+const status = document.querySelector(".app-status");
+if (status) {
+  status.appendChild(notification);
+} else {
+  document.body.appendChild(notification);
+}
+setTimeout(() => notification.remove(), 4000);
+
+}
 
     save("yumaCallHistory", [
       ...callHistory(),
