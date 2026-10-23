@@ -54,13 +54,14 @@
   // 유마 대화는 기존 저장 데이터를 그대로 유지합니다.
   let yumaMessages = read("yumaMessages", initialData.messages || []);
   let yumaKakao = read("yumaKakao", initialData.kakao || []);
-  // 유마의 새 문자 3개는 기존 기록에 한 번만 추가합니다.
-if (localStorage.getItem("yumaNewTextsV1") !== "done") {
-  const newTexts = [
-    "ㅋㅋㅋㅋㅋ잘햇엉",
-    "잘잤어?",
-    "😚😚"
-  ];
+// 유마의 새 문자 3개는 기존 기록에 한 번만 추가합니다.
+try {
+if (localStorage.getItem(“yumaNewTextsV1”) !== “done”) {
+const newTexts = [
+“ㅋㅋㅋㅋㅋ잘햇엉”,
+“잘잤어?”,
+“😚😚”
+];
   const now = Date.now();
   newTexts.forEach((text, index) => {
     yumaMessages.push({
@@ -74,6 +75,9 @@ if (localStorage.getItem("yumaNewTextsV1") !== "done") {
   localStorage.setItem("yumaNewTextsV1", "done");
 }
 
+} catch (error) {
+console.error(“유마 문자 초기화 오류:”, error);
+}
   const requestedMomMessages = [
     { from: "theirs", sender: "엄마", text: "딸~~~ 밥 먹었어?", time: "2026-10-23T12:00:00" },
     { from: "me", sender: "나", text: "이제 먹어야지 ㅜ", time: "2026-10-23T12:01:00" },
@@ -89,11 +93,21 @@ if (localStorage.getItem("yumaNewTextsV1") !== "done") {
   ];
 
   // 새 대화방은 별도 키에 한 번만 생성합니다. 기존 유마 대화는 덮어쓰지 않습니다.
+  try {
   if (localStorage.getItem("yumaChatSetupV3") !== "done") {
-    if (localStorage.getItem("momMessages") === null) save("momMessages", requestedMomMessages);
-    if (localStorage.getItem("minseoKakao") === null) save("minseoKakao", requestedMinseoChat);
+    if (localStorage.getItem("momMessages") === null) {
+      save("momMessages", requestedMomMessages);
+    }
+
+    if (localStorage.getItem("minseoKakao") === null) {
+      save("minseoKakao", requestedMinseoChat);
+    }
+
     localStorage.setItem("yumaChatSetupV3", "done");
   }
+} catch (error) {
+  console.error("채팅 초기화 오류:", error);
+}
 
   let momMessages = read("momMessages", requestedMomMessages);
   let minseoKakao = read("minseoKakao", requestedMinseoChat);
