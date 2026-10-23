@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   const lockScreen = document.getElementById("lock-screen");
   const homeScreen = document.getElementById("home-screen");
-  const const passcodeDisplay = document.getElementById("pass-dots");passcodeDisplay = document.getElementById("passcode-display");
+  const passcodeDisplay = document.getElementById("pass-dots");
+  const keypad = document.getElementById("keypad");
+  const deleteButton = document.getElementById("delete-key");
   if (!lockScreen || !homeScreen || !passcodeDisplay || !keypad) {
     console.error("잠금 화면 요소를 찾을 수 없습니다.");
     return;
@@ -24,29 +26,38 @@ document.addEventListener("DOMContentLoaded", () => {
       button.disabled = true;
     } else {
       button.addEventListener("click", () => {
-        if (value === "⌫") {
-          enteredCode = enteredCode.slice(0, -1);
-        } else if (enteredCode.length < 4) {
-          enteredCode += value;
-        }
-        updateDisplay();
-        if (enteredCode.length === 4) {
-          if (enteredCode === correctCode) {
-            lockScreen.classList.add("hidden");
-            homeScreen.classList.remove("hidden");
-          } else {
-            setTimeout(() => {
-              enteredCode = "";
-              updateDisplay();
-            }, 500);
-          }
-        }
+        enterDigit(value);
       });
     }
     keypad.appendChild(button);
   }
+  function enterDigit(value) {
+    if (value === "⌫") {
+      enteredCode = enteredCode.slice(0, -1);
+    } else if (enteredCode.length < 4) {
+      enteredCode += value;
+    }
+    updateDisplay();
+    if (enteredCode.length === 4) {
+      if (enteredCode === correctCode) {
+        lockScreen.classList.add("hidden");
+        homeScreen.classList.remove("hidden");
+      } else {
+        setTimeout(() => {
+          enteredCode = "";
+          updateDisplay();
+        }, 500);
+      }
+    }
+  }
+  if (deleteButton) {
+    deleteButton.addEventListener("click", () => {
+      enteredCode = "";
+      updateDisplay();
+    });
+  }
   function updateDisplay() {
     passcodeDisplay.textContent =
-      "● ".repeat(enteredCode.length).trim();
+      "● ".repeat(enteredCode.length).trim() || "○ ○ ○ ○";
   }
 });
