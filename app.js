@@ -148,7 +148,8 @@ try {
 
   updateTime();
   setInterval(updateTime, 15000);
-
+  updateMessageBadge();
+  
   $$("[data-app]").forEach((button) => {
     button.addEventListener("click", () => openApp(button.dataset.app));
   });
