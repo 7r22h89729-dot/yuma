@@ -653,47 +653,70 @@ function startCall(name) {
   let connected = false;
   let finished = false;
   content.innerHTML = `
-    <section class="yuma-call-ui" id="yuma-call-ui">
-      <div class="yuma-call-top">
-        <span>◉</span>
-        <span>전화</span>
-        <span>•••</span>
-      </div>
-      <div class="yuma-call-person">
-        <div class="yuma-call-photo">🐱</div>
-        <h1>ユウマ🐱🖤</h1>
-        <p id="yuma-call-status">着信中…</p>
-      </div>
-      <div class="yuma-call-actions" id="yuma-call-actions">
-        <button type="button" id="yuma-decline">
-          <span class="yuma-call-button red">✕</span>
-          <small>거절</small>
-        </button>
-        <button type="button" id="yuma-answer">
-          <span class="yuma-call-button green">☎</span>
-          <small>수락</small>
-        </button>
-      </div>
-      <div class="yuma-call-controls hidden" id="yuma-call-controls">
-        <button type="button" id="yuma-mute">
-          <span>🎙</span>
-          <small>음소거</small>
-        </button>
-        <button type="button" id="yuma-speaker">
-          <span>🔊</span>
-          <small>스피커</small>
-        </button>
-        <button type="button" id="yuma-keypad">
-          <span>▦</span>
-          <small>키패드</small>
-        </button>
-        <button type="button" id="yuma-end">
-          <span class="yuma-call-button red">☎</span>
-          <small>통화 종료</small>
-        </button>
-      </div>
-    </section>
-  `;
+🐱
+ユウマ🐱🖤
+연결 중…
+  <div class="yuma-call-bottom">
+    <div class="yuma-call-controls">
+      <button type="button" disabled>
+        <span class="call-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"/>
+            <path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v3m-4 0h8"/>
+          </svg>
+        </span>
+        <small>음소거</small>
+      </button>
+      <button type="button" disabled>
+        <span class="call-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 10.5a13 13 0 0 1 16 0M7 14a8 8 0 0 1 10 0m-7 3.5a3 3 0 0 1 4 0"/>
+            <circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <small>스피커</small>
+      </button>
+      <button type="button" disabled>
+        <span class="call-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <path d="M8 7h.01M12 7h.01M16 7h.01M8 12h.01M12 12h.01M16 12h.01M8 17h.01M12 17h.01M16 17h.01"/>
+          </svg>
+        </span>
+        <small>키패드</small>
+      </button>
+    </div>
+    <div class="yuma-call-actions">
+      <button type="button" disabled>
+        <span class="call-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        </span>
+        <small>추가</small>
+      </button>
+      <button type="button" id="yuma-end">
+        <span class="call-icon call-end-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3.5 15.5a14 14 0 0 1 17 0l-2.2 3.1a1.5 1.5 0 0 1-1.8.5l-2.5-1.2a1.5 1.5 0 0 1-.8-1.7l.3-1.1a10 10 0 0 0-5 0l.3 1.1a1.5 1.5 0 0 1-.8 1.7l-2.5 1.2a1.5 1.5 0 0 1-1.8-.5Z" fill="currentColor" stroke="none"/>
+          </svg>
+        </span>
+        <small>종료</small>
+      </button>
+      <button type="button" disabled>
+        <span class="call-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 21v-2a8 8 0 0 1 16 0v2"/>
+          </svg>
+        </span>
+        <small>연락처</small>
+      </button>
+    </div>
+  </div>
+</section>
+
+`;
   const styleId = "yuma-call-style";
   if (!document.getElementById(styleId)) {
     const style = document.createElement("style");
@@ -889,7 +912,7 @@ notification.innerHTML = `
   <span class="yuma-notification-icon">🐱</span>
   <span>
     <strong>電話</strong>
-    <small>ユウマ🐱🖤에게 연습중!</small>
+    <small>나 연습중!</small>
   </span>
 `;
 const status = document.querySelector(".app-status");
