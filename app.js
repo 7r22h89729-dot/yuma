@@ -459,13 +459,15 @@ if (!isKakao && person === "yuma") {
   scheduleYumaReply(text);
 }
     });
-  }
-  // 유마 자동 답장
+  }// 유마 자동 답장
 function scheduleYumaReply(userText) {
-const normalized = userText.replace(/\s+/g, "");
+const normalized = userText.replace(/\s+/g, “”);
 
 let replies = [];
-if (normalized.includes("이제일어났어") || normalized.includes("일어났어")) {
+if (
+  normalized.includes("이제일어났어") ||
+  normalized.includes("일어났어")
+) {
   replies = [
     "ㅋㅋㅋㅋ잘햇엉",
     "잘잤어?",
