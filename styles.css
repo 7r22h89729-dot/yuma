@@ -1,26 +1,37 @@
-/* =========================================
+/* =====================================
    YUMA SIMULATION
-   Real iPhone inspired design
-   ========================================= */
+   iPhone-inspired interface
+   ===================================== */
 
 :root {
-  font-family: -apple-system, BlinkMacSystemFont,
-    "SF Pro Display", "Helvetica Neue", sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Helvetica Neue",
+    sans-serif;
+
   color: #1c1c1e;
   background: #e5e5ea;
-  font-synthesis: none;
-  -webkit-tap-highlight-color: transparent;
+
+  --ios-blue: #007aff;
+  --ios-gray: #8e8e93;
+  --ios-background: #f2f2f7;
+  --ios-border: #e5e5ea;
+
+  --phone-wallpaper:
+    url("BDF00F0C-F33B-4413-A2A5-A9405E51F740.jpeg");
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
 body {
-  margin: 0;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
+  margin: 0;
 }
 
 body {
@@ -36,18 +47,13 @@ button {
   cursor: pointer;
 }
 
-button:active {
-  opacity: 0.7;
-  transform: scale(0.98);
-}
-
 .hidden {
   display: none !important;
 }
 
-/* =========================================
+/* =====================================
    PHONE SCREEN
-   ========================================= */
+   ===================================== */
 
 .screen {
   position: relative;
@@ -58,55 +64,42 @@ button:active {
   min-height: 620px;
   margin: 0 auto;
   overflow: hidden;
-  background: #f2f2f7;
+  background: var(--ios-background);
 }
 
-/* =========================================
-   BACKGROUND IMAGE
-   사진을 변경하고 싶을 때 이 파일명만 수정
-   ========================================= */
-
-:root {
-  --phone-wallpaper:
-    url("BDF00F0C-F33B-4413-A2A5-A9405E51F740.jpeg");
-}
-
-/* =========================================
+/* =====================================
    STATUS BAR
-   ========================================= */
+   ===================================== */
 
 .status,
 .app-status {
   position: relative;
   z-index: 3;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
   height: 44px;
   padding: 13px 25px 0;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+
   font-size: 14px;
   font-weight: 650;
-  letter-spacing: -0.2px;
 }
 
-.app-status {
-  background: #f2f2f7;
-  color: #1c1c1e;
-}
-
-/* =========================================
+/* =====================================
    LOCK SCREEN
-   ========================================= */
+   ===================================== */
 
 .lock-screen {
   color: white;
 
-  /* 잠금 화면 배경 사진 */
+  background-color: #b9b9c5;
   background-image:
     linear-gradient(
       to bottom,
       rgba(0, 0, 0, 0.12),
-      rgba(0, 0, 0, 0.05) 40%,
+      rgba(0, 0, 0, 0.02) 45%,
       rgba(0, 0, 0, 0.38)
     ),
     var(--phone-wallpaper);
@@ -124,45 +117,55 @@ button:active {
 .lock-date {
   position: relative;
   z-index: 1;
+
   margin-top: 48px;
   padding: 0 12px;
+
   text-align: center;
   font-size: 19px;
   font-weight: 500;
+
   text-shadow: 0 1px 8px #0005;
 }
 
 .lock-time {
   position: relative;
   z-index: 1;
+
   margin-top: 2px;
+
   text-align: center;
   font-size: clamp(70px, 20vw, 88px);
   font-weight: 250;
   line-height: 1.1;
   letter-spacing: -4px;
+
   font-variant-numeric: tabular-nums;
   text-shadow: 0 2px 12px #0003;
 }
 
 .lock-subtitle {
-  position: relative;
-  z-index: 1;
   margin-top: 13px;
+
   text-align: center;
   font-size: 13px;
+
   color: rgba(255, 255, 255, 0.9);
   text-shadow: 0 1px 5px #0005;
 }
 
-/* 비밀번호 입력 영역 */
+/* =====================================
+   PASSCODE
+   ===================================== */
 
 .passcode-box {
   position: absolute;
   z-index: 2;
+
   left: 0;
   right: 0;
   bottom: max(62px, env(safe-area-inset-bottom));
+
   width: 100%;
   text-align: center;
 }
@@ -171,12 +174,12 @@ button:active {
   margin: 0;
   font-size: 14px;
   color: white;
-  text-shadow: 0 1px 5px #0005;
 }
 
 .dots {
   min-height: 22px;
   margin: 15px 0;
+
   color: white;
   font-size: 17px;
   letter-spacing: 9px;
@@ -184,16 +187,20 @@ button:active {
 
 /* 숫자 키패드 */
 
-#keypad,
-.keypad {
+#keypad {
   display: grid !important;
+
   grid-template-columns: repeat(3, 68px) !important;
   grid-template-rows: repeat(4, 56px) !important;
+
   grid-auto-flow: row !important;
+
   justify-content: center !important;
   justify-items: center;
   align-items: center;
+
   gap: 10px 13px;
+
   width: 100%;
   margin: 12px auto;
   padding: 0;
@@ -203,19 +210,27 @@ button:active {
 #keypad > .keypad-button {
   display: flex !important;
   position: static !important;
+
   justify-content: center;
   align-items: center;
+
   width: 68px !important;
   height: 56px !important;
+
   margin: 0 !important;
   padding: 0 !important;
+
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 50%;
+
   background: rgba(255, 255, 255, 0.2);
   color: white;
+
   font-size: 25px;
   font-weight: 400;
+
   box-shadow: 0 2px 10px #0001;
+
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -233,8 +248,10 @@ button:active {
 .text-button {
   margin-top: 5px;
   padding: 8px 15px;
+
   border: 0;
   background: transparent;
+
   color: white;
   font-size: 14px;
 }
@@ -243,22 +260,24 @@ button:active {
   position: absolute;
   bottom: 15px;
   left: 0;
+
   width: 100%;
   margin: 0;
   padding: 0 12px;
+
   text-align: center;
   font-size: 10px;
+
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* =========================================
+/* =====================================
    HOME SCREEN
-   ========================================= */
+   ===================================== */
 
 .home-screen {
-  background-color: #e5e5ea;
+  background-color: #b9b9c5;
 
-  /* 홈 화면 배경 사진 */
   background-image:
     linear-gradient(
       to bottom,
@@ -280,142 +299,110 @@ button:active {
 
 .home-date {
   position: relative;
+
   margin: 17px 20px 20px;
+
   color: white;
   font-size: 16px;
   font-weight: 650;
+
   text-shadow: 0 1px 7px #0005;
 }
 
-/* =========================================
-   HOME SCREEN APP ICONS
-   ========================================= */
+/* =====================================
+   APP GRID
+   ===================================== */
 
 .app-grid {
   display: grid;
+
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px 7px;
+
   padding: 10px 17px;
 }
 
+/* 홈 화면 앱 버튼 */
+
 .app-icon {
-  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
+
   gap: 6px;
+  min-width: 0;
   padding: 0;
+
   border: 0;
   background: transparent;
+
   color: white;
   font-size: 11px;
   font-weight: 500;
-  text-shadow: 0 1px 5px #0005;
+  text-align: center;
+
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
 
-.icon {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* =====================================
+   CUSTOM ICON IMAGES
+   ===================================== */
+
+.icon-image {
+  display: block;
+
   width: 56px;
   height: 56px;
-  border-radius: 14px;
-  font-size: 28px;
+  flex-shrink: 0;
+
+  object-fit: cover;
+  object-position: center;
+
+  border-radius: 13px;
+
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+
   box-shadow:
     0 2px 5px rgba(0, 0, 0, 0.12),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.35);
-  overflow: hidden;
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.15);
+
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
 }
 
-/* 앱 아이콘 */
-
-.tile-photos {
-  background: linear-gradient(145deg, #fff, #f2d6e6);
+.app-icon:active .icon-image {
+  transform: scale(0.92);
+  opacity: 0.8;
 }
 
-.tile-phone {
-  background: #30d158;
-  color: white;
-}
-
-.tile-messages {
-  background: #30d158;
-  color: white;
-}
-
-.tile-kakao {
-  background: #fee500;
-  color: #211d12;
-}
-
-.tile-calendar {
-  flex-direction: column;
-  gap: 0;
-  background: white;
-  color: #1c1c1e;
-  font-size: 11px;
-}
-
-.tile-calendar b {
-  color: #ff453a;
-  font-size: 11px;
-}
-
-.tile-calendar strong {
-  font-size: 24px;
-  line-height: 1.05;
-}
-
-.tile-music {
-  background: linear-gradient(145deg, #fa6c9a, #8748c7);
-  color: white;
-}
-
-.tile-instagram {
-  background: linear-gradient(
-    145deg,
-    #ffdc80,
-    #fcaf45,
-    #dd2a7b,
-    #8134af,
-    #515bd4
-  );
-  color: white;
-}
-
-.tile-settings {
-  background: linear-gradient(145deg, #c9ced5, #777f89);
-}
-
-.tile-camera {
-  background: linear-gradient(145deg, #777, #dedede);
-  color: #222;
-}
-
-.tile-clock {
-  background: white;
-  color: #1c1c1e;
-}
-
-/* =========================================
+/* =====================================
    DOCK
-   ========================================= */
+   ===================================== */
 
 .dock {
   position: absolute;
+
   left: 15px;
   right: 15px;
   bottom: max(24px, env(safe-area-inset-bottom));
+
   display: flex;
   justify-content: space-around;
   align-items: center;
+
   gap: 8px;
   min-height: 76px;
   padding: 12px 9px;
+
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 27px;
+
   background: rgba(245, 245, 250, 0.35);
+
   box-shadow: 0 4px 18px #0001;
+
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
 }
@@ -424,38 +411,64 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: center;
+
   flex-shrink: 0;
+
   width: 49px;
   height: 49px;
   padding: 0;
+
   border: 0;
   border-radius: 14px;
-  font-size: 24px;
-  box-shadow: 0 2px 5px #0002;
+
+  overflow: hidden;
+  background: transparent;
 }
 
-/* =========================================
-   APP SCREENS
-   ========================================= */
+.dock-icon img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+
+  border-radius: 14px;
+}
+
+/* =====================================
+   APP SCREEN
+   ===================================== */
 
 .app-screen {
   position: absolute;
   inset: 0;
   z-index: 5;
+
   overflow: hidden;
-  background: #f2f2f7;
+
+  background: var(--ios-background);
+  color: #1c1c1e;
+}
+
+.app-status {
+  background: var(--ios-background);
   color: #1c1c1e;
 }
 
 .app-header {
   position: relative;
   z-index: 2;
+
   display: grid;
   grid-template-columns: 52px 1fr 52px;
   align-items: center;
+
   height: 52px;
   padding: 0 10px;
-  border-bottom: 1px solid #e5e5ea;
+
+  border-bottom: 1px solid var(--ios-border);
   background: rgba(242, 242, 247, 0.96);
 }
 
@@ -463,9 +476,11 @@ button:active {
   width: 42px;
   height: 42px;
   padding: 0;
+
   border: 0;
   background: transparent;
-  color: #007aff;
+
+  color: var(--ios-blue);
   font-size: 36px;
   font-weight: 300;
   line-height: 1;
@@ -473,6 +488,7 @@ button:active {
 
 .app-header h1 {
   margin: 0;
+
   text-align: center;
   font-size: 17px;
   font-weight: 650;
@@ -480,8 +496,10 @@ button:active {
 
 #app-content {
   height: calc(100% - 140px);
+
   overflow-y: auto;
   padding: 14px 16px 28px;
+
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
@@ -489,20 +507,24 @@ button:active {
 .home-indicator {
   position: absolute;
   z-index: 10;
+
   bottom: max(8px, env(safe-area-inset-bottom));
   left: calc(50% - 62px);
+
   width: 124px;
   height: 5px;
+
   border-radius: 10px;
   background: #1c1c1e;
 }
 
-/* =========================================
-   APP CONTENT COMPONENTS
-   ========================================= */
+/* =====================================
+   COMMON COMPONENTS
+   ===================================== */
 
 .section-title {
   margin: 8px 0 18px;
+
   font-size: 24px;
   font-weight: 750;
   letter-spacing: -0.5px;
@@ -512,19 +534,25 @@ button:active {
   display: flex;
   align-items: center;
   gap: 12px;
+
   padding: 13px 4px;
-  border-bottom: 1px solid #e5e5ea;
+
+  border-bottom: 1px solid var(--ios-border);
 }
 
 .avatar {
   display: flex;
   flex-shrink: 0;
+
   align-items: center;
   justify-content: center;
+
   width: 43px;
   height: 43px;
+
   border-radius: 50%;
-  background: #e5e5ea;
+  background: var(--ios-border);
+
   font-size: 22px;
 }
 
@@ -539,23 +567,32 @@ button:active {
 
 .row-sub {
   margin-top: 4px;
-  color: #8e8e93;
+
+  color: var(--ios-gray);
   font-size: 13px;
 }
 
 .pill {
   padding: 9px 13px;
+
   border: 0;
   border-radius: 18px;
-  background: #e5e5ea;
-  color: #007aff;
+
+  background: var(--ios-border);
+  color: var(--ios-blue);
+
   font-size: 13px;
   font-weight: 600;
 }
 
+/* =====================================
+   CHAT
+   ===================================== */
+
 .chat-top {
   padding: 6px 0 16px;
-  color: #8e8e93;
+
+  color: var(--ios-gray);
   text-align: center;
   font-size: 12px;
 }
@@ -564,76 +601,96 @@ button:active {
   display: flex;
   flex-direction: column;
   gap: 9px;
+
   padding-bottom: 15px;
 }
 
 .bubble {
   max-width: 83%;
   padding: 10px 13px;
+
   border-radius: 18px;
+
   font-size: 15px;
   line-height: 1.4;
+
   overflow-wrap: anywhere;
 }
 
 .bubble.in {
   align-self: flex-start;
+
   border-bottom-left-radius: 5px;
+
   background: #e5e5ea;
   color: #1c1c1e;
 }
 
 .bubble.out {
   align-self: flex-end;
+
   border-bottom-right-radius: 5px;
-  background: #007aff;
+
+  background: var(--ios-blue);
   color: white;
 }
 
 .chat-input {
   position: sticky;
   bottom: -28px;
+
   display: flex;
   gap: 8px;
+
   padding: 10px 0 4px;
-  background: #f2f2f7;
+
+  background: var(--ios-background);
 }
 
 .chat-input input {
   flex: 1;
   min-width: 0;
+
   padding: 11px 14px;
+
   border: 1px solid #d1d1d6;
   border-radius: 22px;
+
   outline: none;
   background: white;
+
   font-size: 14px;
 }
 
 .chat-input input:focus {
-  border-color: #007aff;
+  border-color: var(--ios-blue);
 }
 
 .chat-input button {
   width: 42px;
   height: 42px;
   flex-shrink: 0;
+
   border: 0;
   border-radius: 50%;
-  background: #007aff;
+
+  background: var(--ios-blue);
   color: white;
+
   font-size: 20px;
 }
 
-/* =========================================
-   CALENDAR / MUSIC / PHOTOS
-   ========================================= */
+/* =====================================
+   CALENDAR
+   ===================================== */
 
 .date-card {
   margin: 10px 0;
   padding: 16px;
-  border: 1px solid #e5e5ea;
+
+  border: 1px solid var(--ios-border);
   border-radius: 18px;
+
   background: white;
 }
 
@@ -647,85 +704,101 @@ button:active {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+
   margin-bottom: 15px;
 }
 
 .mini-tabs button {
   padding: 9px 13px;
+
   border: 0;
   border-radius: 18px;
-  background: #e5e5ea;
+
+  background: var(--ios-border);
   color: #1c1c1e;
+
   font-size: 13px;
 }
 
-.empty {
-  padding: 35px 10px;
-  color: #8e8e93;
-  text-align: center;
-}
+/* =====================================
+   PHOTOS
+   ===================================== */
 
 .photo-grid {
   display: grid;
+
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 4px;
 }
 
 .photo-placeholder {
   display: grid;
+
   aspect-ratio: 1;
   place-items: center;
+
   background: linear-gradient(145deg, #e5dfea, #c9d5dc);
+
   color: #777;
   text-align: center;
   font-size: 12px;
 }
 
+/* =====================================
+   MUSIC
+   ===================================== */
+
 .music-track {
   padding: 14px 4px;
-  border-bottom: 1px solid #e5e5ea;
+
+  border-bottom: 1px solid var(--ios-border);
 }
 
 .music-track button {
   width: 100%;
+
   border: 0;
   background: transparent;
+
   text-align: left;
   font-size: 14px;
 }
 
-.muted {
-  color: #8e8e93;
-  font-size: 13px;
-}
-
-/* =========================================
+/* =====================================
    INSTAGRAM
-   ========================================= */
+   ===================================== */
 
 .profile-head {
   display: flex;
   align-items: center;
   gap: 20px;
+
   padding: 15px 0;
 }
 
 .profile-avatar {
   display: grid;
   flex-shrink: 0;
+
   width: 78px;
   height: 78px;
+
   place-items: center;
+
   border-radius: 50%;
   background: #f2dce8;
+
   font-size: 28px;
 }
 
 .post {
   overflow: hidden;
+
   margin: 14px 0;
-  border: 1px solid #e5e5ea;
+
+  border: 1px solid var(--ios-border);
   border-radius: 12px;
+
   background: white;
 }
 
@@ -737,47 +810,75 @@ button:active {
 
 .post-image {
   display: grid;
+
   height: 240px;
   place-items: center;
+
   background: linear-gradient(145deg, #d9d4e6, #f1dce2);
+
   color: #777;
 }
 
 .like {
   padding: 8px 12px;
+
   border: 0;
   background: transparent;
+
   font-size: 23px;
 }
 
-/* =========================================
-   TOAST MESSAGE
-   ========================================= */
+/* =====================================
+   EMPTY STATE
+   ===================================== */
+
+.empty {
+  padding: 35px 10px;
+
+  color: var(--ios-gray);
+  text-align: center;
+}
+
+.muted {
+  color: var(--ios-gray);
+  font-size: 13px;
+}
+
+/* =====================================
+   TOAST
+   ===================================== */
 
 .toast {
   position: fixed;
   z-index: 20;
+
   top: 52px;
   left: 50%;
+
   transform: translateX(-50%);
+
   max-width: calc(100vw - 30px);
   padding: 12px 16px;
+
   border-radius: 20px;
+
   background: rgba(37, 37, 43, 0.88);
   color: white;
+
   text-align: center;
   font-size: 13px;
+
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
 a {
-  color: #007aff;
+  color: var(--ios-blue);
 }
 
-/* =========================================
-   SMALL SCREEN ADJUSTMENTS
-   ========================================= */
+/* =====================================
+   SMALL SCREEN
+   ===================================== */
 
 @media (max-height: 740px) {
   .lock-date {
@@ -792,15 +893,14 @@ a {
     bottom: 48px;
   }
 
-  #keypad,
-  .keypad {
+  #keypad {
     grid-template-rows: repeat(4, 48px) !important;
     gap: 7px 12px;
   }
 
   #keypad > button,
   #keypad > .keypad-button {
-    height: 48px !important;
     width: 62px !important;
+    height: 48px !important;
   }
 }
