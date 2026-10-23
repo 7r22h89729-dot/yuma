@@ -1,8 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const lockScreen = document.getElementById("lock-screen");
   const homeScreen = document.getElementById("home-screen");
-  const passcodeDisplay = document.getElementById("passcode-display");
-  const keypad = document.getElementById("keypad");
+  const const passcodeDisplay = document.getElementById("pass-dots");passcodeDisplay = document.getElementById("passcode-display");
   if (!lockScreen || !homeScreen || !passcodeDisplay || !keypad) {
     console.error("잠금 화면 요소를 찾을 수 없습니다.");
     return;
