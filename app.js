@@ -418,11 +418,11 @@ if (localStorage.getItem("yumaNewTextsV1") !== "done") {
     page.appendChild(tabs);
   }
 /* 전화 앱: 최근 통화 */
-function renderPhone(tab = “recent”) {
-setTitle(“전화”);
-setView(phone-${tab});
-content.innerHTML = “”;
-
+function renderPhone(tab = "recent") {
+  setTitle("전화");
+  setView(`phone-${tab}`);
+  content.innerHTML = "";
+  
 const page = card("ios-page phone-page");
 page.innerHTML = `
   <div class="phone-topbar">
