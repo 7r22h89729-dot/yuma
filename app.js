@@ -387,18 +387,7 @@ if (localStorage.getItem("yumaNewTextsV1") !== "done") {
     const chatList = $("#kakao-chat-list", page);
 
     function draw(filter = "") {
-      chatList.innerHTML = "";
-      const conversations = [
-        { id: "yuma", name: "🐱", preview: yumaKakao.at(-1)?.text || "대화", avatar: "🐱" },
-        { id: "minseo", name: "민서", preview: minseoKakao.at(-1)?.text || "너 일본이니?", avatar: "" }
-      ];
-
-      conversations
-        .filter(person => `${person.name} ${person.preview}`.toLowerCase().includes(filter.toLowerCase()))
-        .forEach(person => {
-          const row = document.createElement("button");
-          row.type = "button";
-          row.className = "ios-conversation";
+      chatList.innerHTㅐ "ios-conversation";
 
           const avatar = person.avatar
             ? `<span class="ios-avatar">🐱</span>`
@@ -428,8 +417,6 @@ if (localStorage.getItem("yumaNewTextsV1") !== "done") {
 
     page.appendChild(tabs);
   }
-
-  /* 전화 */
 /* 전화 앱: 최근 통화 */
 function renderPhone(tab = “recent”) {
 setTitle(“전화”);
@@ -451,7 +438,6 @@ page.innerHTML = `
   <div class="phone-call-list" id="phone-call-list"></div>
 `;
 const list = $("#phone-call-list", page);
-// 유우마 기록만 누를 수 있습니다.
 const calls = [
   { name: "ユウマ🐱🖤", detail: "발신 통화", time: "오늘", avatar: "🐱", enabled: true },
   { name: "민서", detail: "수신 통화", time: "어제", avatar: "🌷", enabled: false },
@@ -484,7 +470,6 @@ calls.forEach(call => {
   list.appendChild(row);
 });
 content.appendChild(page);
-// 탭은 아이폰처럼 표시하되 모두 비활성화합니다.
 const tabs = document.createElement("nav");
 tabs.className = "ios-tab-bar phone-disabled-tabs";
 [
@@ -498,7 +483,9 @@ tabs.className = "ios-tab-bar phone-disabled-tabs";
   button.type = "button";
   button.disabled = true;
   button.innerHTML = `<span class="tab-symbol">${icon}</span><span>${label}</span>`;
-  if (label === "최근 통화") button.classList.add("active");
+  if (label === "최근 통화") {
+    button.classList.add("active");
+  }
   tabs.appendChild(button);
 });
 content.appendChild(tabs);
@@ -562,30 +549,6 @@ if (status) {
 setTimeout(() => notification.remove(), 4000);
 
 }
-
-    save("yumaCallHistory", [
-      ...callHistory(),
-      {name:"ユウマ",detail:new Date().toLocaleString("ko-KR")}
-    ]);
-
-    content.innerHTML = `<section class="ios-call-screen"><div class="ios-avatar ios-call-avatar">🐱</div><h2>ユウマ</h2><p id="call-state">가상 통화 · 00:00</p><button id="end-call" class="ios-call-end">●</button><p class="ios-muted">실제 통화는 연결되지 않습니다.</p></section>`;
-
-    let seconds = 0;
-
-    const timer = setInterval(() => {
-      seconds++;
-      const state = $("#call-state");
-
-      if (state) {
-        state.textContent = `가상 통화 · ${String(Math.floor(seconds / 60)).padStart(2,"0")}:${String(seconds % 60).padStart(2,"0")}`;
-      }
-    }, 1000);
-
-    $("#end-call").addEventListener("click", () => {
-      clearInterval(timer);
-      renderPhone("recent");
-    });
-  }
 
   /* 사진 */
   function renderPhotos(tab = "library") {
