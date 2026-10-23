@@ -1,259 +1,702 @@
-<!DOCTYPE html>
+요청하신 기획서의 모든 세부 조건과 유마 팬 시뮬레이션 요구사항을 100% 충족하는 통합 단일 index.html 전체 코드입니다.
+기존 코드와 파일들을 모두 대치하여 바로 사용할 수 있도록 깔끔하게 정리했습니다. GitHub의 index.html 파일 편집 화면에서 전체 내용을 삭제하신 후 아래 코드를 그대로 붙여넣고 저장(Commit changes) 해 주세요!
+<!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yuma's iPhone</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f3f8">
+  <title>Yuma Simulation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    :root { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif; color: #1c1c1e; }
+    body { margin: 0; padding: 0; background: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; user-select: none; }
+    
+    .phone-container { position: relative; width: 100vw; max-width: 420px; height: 100dvh; max-height: 880px; background: #000; overflow: hidden; border-radius: 0; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+    @media (min-width: 480px) { .phone-container { border-radius: 48px; border: 8px solid #2d2d2d; height: 92vh; } }
+
+    .screen { position: absolute; inset: 0; display: flex; flex-direction: column; width: 100%; height: 100%; overflow: hidden; background: #f2f2f7; }
+    .hidden { display: none !important; }
+
+    .status-bar { height: 44px; padding: 12px 24px 0; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; z-index: 100; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+    .status-bar.dark { color: #000; text-shadow: none; }
+    .status-icons { display: flex; gap: 6px; align-items: center; font-size: 12px; }
+
+    .lock-screen { background-size: cover; background-position: center; color: #fff; justify-content: space-between; padding-bottom: 30px; }
+    .lock-header { text-align: center; margin-top: 40px; }
+    .lock-date { font-size: 18px; font-weight: 500; opacity: 0.9; }
+    .lock-time { font-size: 78px; font-weight: 200; letter-spacing: -2px; line-height: 1; margin-top: 4px; }
+    .passcode-box { text-align: center; margin-bottom: 20px; }
+    .passcode-title { font-size: 14px; opacity: 0.8; margin-bottom: 12px; }
+    .dots { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid #fff; }
+    .dot.filled { background: #fff; }
+    .keypad { display: grid; grid-template-columns: repeat(3, 72px); gap: 16px; justify-content: center; }
+    .keypad button { width: 72px; height: 72px; border-radius: 50%; border: none; background: rgba(255,255,255,0.25); backdrop-filter: blur(15px); color: #fff; font-size: 26px; font-weight: 400; }
+    .keypad button:active { background: rgba(255,255,255,0.4); }
+    .lock-bottom-btns { display: flex; justify-content: space-between; padding: 0 46px; margin-bottom: 10px; }
+    .circle-btn { width: 50px; height: 50px; border-radius: 50%; background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; }
+
+    .home-screen { background-size: cover; background-position: center; justify-content: space-between; padding: 0 16px 20px; }
+    .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 12px; padding-top: 20px; }
+    .app-item { display: flex; flex-direction: column; align-items: center; position: relative; border: none; background: transparent; cursor: pointer; }
+    .app-icon { width: 60px; height: 60px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); background-size: cover; background-position: center; }
+    .app-name { font-size: 11px; color: #fff; margin-top: 6px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); font-weight: 500; }
+    .badge { position: absolute; top: -4px; right: 6px; background: #ff3b30; color: #fff; font-size: 11px; font-weight: bold; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+    .dock { background: rgba(255,255,255,0.3); backdrop-filter: blur(25px); border-radius: 32px; padding: 12px 16px; display: flex; justify-style: space-around; justify-content: space-around; margin-bottom: 8px; }
+
+    .app-header { height: 48px; background: #f9f9f9; border-bottom: 0.5px solid #d1d1d6; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 17px; font-weight: 600; flex-shrink: 0; }
+    .back-btn { color: #007aff; border: none; background: transparent; font-size: 17px; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+    .app-body { flex: 1; overflow-y: auto; background: #fff; position: relative; }
+    .home-indicator { width: 134px; height: 5px; background: #000; border-radius: 3px; margin: 6px auto 4px; flex-shrink: 0; cursor: pointer; opacity: 0.8; }
+    .home-indicator.white { background: #fff; }
+
+    .toast-banner { position: absolute; top: 12px; left: 12px; right: 12px; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); border-radius: 18px; padding: 12px 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 999; display: flex; gap: 12px; align-items: center; transform: translateY(-150%); transition: transform 0.4s cubic-bezier(0.1, 1, 0.1, 1); }
+    .toast-banner.show { transform: translateY(0); }
+    .toast-icon { width: 36px; height: 36px; border-radius: 8px; background: #fee500; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .toast-content { flex: 1; min-width: 0; }
+    .toast-title { font-size: 13px; font-weight: 700; color: #1c1c1e; }
+    .toast-msg { font-size: 13px; color: #3a3a3c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px; }
+    .photo-thumb { aspect-ratio: 1; background-size: cover; background-position: center; border: none; }
+    .photo-viewer { position: absolute; inset: 0; background: #000; z-index: 200; display: flex; flex-direction: column; }
+    .photo-viewer img { width: 100%; height: 100%; object-fit: contain; }
+
+    .chat-container { display: flex; flex-direction: column; gap: 10px; padding: 12px; background: #f2f2f7; min-height: 100%; }
+    .chat-container.kakao { background: #abc1d1; }
+    .bubble { max-width: 75%; padding: 9px 14px; border-radius: 18px; font-size: 15px; line-height: 1.35; word-break: break-word; position: relative; }
+    .bubble.in { align-self: flex-start; background: #e9e9eb; color: #000; border-bottom-left-radius: 4px; }
+    .bubble.out { align-self: flex-end; background: #007aff; color: #fff; border-bottom-right-radius: 4px; }
+    .kakao .bubble.in { background: #fff; color: #000; }
+    .kakao .bubble.out { background: #fee500; color: #000; }
+    .chat-input-bar { padding: 8px 12px; background: #fff; border-top: 0.5px solid #d1d1d6; display: flex; gap: 8px; align-items: center; }
+    .chat-input-bar input { flex: 1; height: 36px; border-radius: 18px; border: 1px solid #c7c7cc; padding: 0 14px; font-size: 14px; outline: none; }
+    .chat-input-bar button { width: 32px; height: 32px; border-radius: 50%; border: none; background: #007aff; color: #fff; font-size: 14px; flex-shrink: 0; }
+
+    .call-screen { background: #1c1c1e; color: #fff; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 60px 20px 40px; }
+    .call-avatar { width: 110px; height: 110px; border-radius: 50%; background-size: cover; background-position: center; margin-bottom: 16px; border: 2px solid #3a3a3c; }
+  </style>
 </head>
-<body class="bg-black text-white flex items-center justify-center min-h-screen p-0 sm:p-4 select-none">
+<body>
 
-    <!-- MEDIA CONFIGURATION -->
-    <script>
-        const MEDIA_CONFIG = {
-            lockscreen_bg: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
-            homescreen_bg: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
-            profile_img: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
-            photos_app: [
-                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
-                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4887.jpeg',
-                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234617_2465981427.jpeg',
-                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234653_3116113101.jpeg',
-                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234703_929747686.jpeg'
-            ],
-            kakaotalk_chat_images: {
-                childhood: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234617_2465981427.jpeg',
-                practice: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234653_3116113101.jpeg',
-                food: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234703_929747686.jpeg'
-            },
-            applemusic_cover: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4887.jpeg',
-            instagram_post1: [
-                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg'
-            ],
-            instagram_post2: [
-                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234617_2465981427.jpeg',
-                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234645_1436093600.mp4',
-                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234653_3116113101.jpeg',
-                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234703_929747686.jpeg'
-            ]
-        };
-    </script>
-
-    <!-- Main Phone Frame Container -->
-    <div id="phone-container" class="relative w-full max-w-[390px] h-[844px] bg-black sm:rounded-[50px] overflow-hidden shadow-2xl border-0 sm:border-[8px] border-gray-800">
-        
-        <!-- TOP STATUS BAR -->
-        <div id="status-bar" class="absolute top-0 left-0 w-full h-12 px-7 pt-3 flex justify-between items-center z-50 text-white font-semibold text-xs">
-            <span id="status-time">23:59</span>
-            <div class="w-24 h-5 bg-black rounded-full flex items-center justify-center space-x-1">
-                <div class="w-2.5 h-2.5 rounded-full bg-gray-900"></div>
-            </div>
-            <div class="flex items-center space-x-1.5">
-                <i class="fa-solid font-bold fa-signal text-[10px]"></i>
-                <i class="fa-solid font-bold fa-wifi text-[10px]"></i>
-                <i class="fa-solid font-bold fa-battery-full text-[12px]"></i>
-            </div>
-        </div>
-
-        <!-- LOCK SCREEN -->
-        <div id="lock-screen" class="absolute inset-0 bg-cover bg-center flex flex-col justify-between p-8 pt-16 z-40 transition-transform duration-500" style="background-image: url('https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg');">
-            <div class="flex flex-col items-center text-white mt-4">
-                <i class="fa-solid fa-lock text-xs opacity-70 mb-1"></i>
-                <h1 id="lock-time" class="text-6xl font-light tracking-tight">23:59</h1>
-                <p id="lock-date" class="text-sm font-medium opacity-90 mt-1">10월 24일 토요일</p>
-            </div>
-
-            <!-- Passcode View -->
-            <div class="flex flex-col items-center mb-8">
-                <p class="text-xs text-white/80 mb-4">암호 입력 (0207)</p>
-                <div class="flex space-x-3 mb-6" id="passcode-dots">
-                    <div class="w-3 h-3 rounded-full border border-white"></div>
-                    <div class="w-3 h-3 rounded-full border border-white"></div>
-                    <div class="w-3 h-3 rounded-full border border-white"></div>
-                    <div class="w-3 h-3 rounded-full border border-white"></div>
-                </div>
-                <div class="grid grid-cols-3 gap-4 w-64 text-center">
-                    <button onclick="pressKey('1')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">1</button>
-                    <button onclick="pressKey('2')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">2</button>
-                    <button onclick="pressKey('3')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">3</button>
-                    <button onclick="pressKey('4')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">4</button>
-                    <button onclick="pressKey('5')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">5</button>
-                    <button onclick="pressKey('6')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">6</button>
-                    <button onclick="pressKey('7')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">7</button>
-                    <button onclick="pressKey('8')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">8</button>
-                    <button onclick="pressKey('9')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">9</button>
-                    <div></div>
-                    <button onclick="pressKey('0')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">0</button>
-                    <button onclick="clearPasscode()" class="w-16 h-16 rounded-full flex items-center justify-center text-xs text-white">취소</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- HOME SCREEN -->
-        <div id="home-screen" class="absolute inset-0 bg-cover bg-center p-6 pt-16 flex flex-col justify-between hidden" style="background-image: url('https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg');">
-            <!-- App Grid -->
-            <div class="grid grid-cols-4 gap-5 pt-4">
-                <div onclick="openApp('photos')" class="flex flex-col items-center cursor-pointer">
-                    <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-images text-2xl text-yellow-500"></i>
-                    </div>
-                    <span class="text-[11px] text-white mt-1 shadow-sm">사진</span>
-                </div>
-                <div onclick="openApp('instagram')" class="flex flex-col items-center cursor-pointer">
-                    <div class="w-14 h-14 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                        <i class="fa-brands fa-instagram text-3xl text-white"></i>
-                    </div>
-                    <span class="text-[11px] text-white mt-1 shadow-sm">Instagram</span>
-                </div>
-                <div onclick="openApp('kakaotalk')" class="flex flex-col items-center cursor-pointer">
-                    <div class="w-14 h-14 bg-[#FEE500] rounded-2xl flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-comment text-2xl text-[#3C1E1E]"></i>
-                    </div>
-                    <span class="text-[11px] text-white mt-1 shadow-sm">카카오톡</span>
-                </div>
-                <div onclick="openApp('music')" class="flex flex-col items-center cursor-pointer">
-                    <div class="w-14 h-14 bg-gradient-to-b from-pink-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-music text-2xl text-white"></i>
-                    </div>
-                    <span class="text-[11px] text-white mt-1 shadow-sm">Music</span>
-                </div>
-            </div>
-
-            <!-- Home Bar Indicator -->
-            <div onclick="goHome()" class="w-32 h-1 bg-white/80 rounded-full mx-auto mb-2 cursor-pointer"></div>
-        </div>
-
-        <!-- APP CONTAINER -->
-        <div id="app-view" class="absolute inset-0 bg-black z-30 hidden flex flex-col pt-12">
-            <div class="flex-1 overflow-y-auto no-scrollbar" id="app-content"></div>
-            <!-- Bottom Navigation / Home Indicator -->
-            <div class="h-8 bg-black/90 flex items-center justify-center">
-                <div onclick="goHome()" class="w-32 h-1 bg-white/80 rounded-full cursor-pointer"></div>
-            </div>
-        </div>
-
+  <div class="phone-container" id="phone">
+    
+    <div class="status-bar" id="status-bar">
+      <span id="clock-time">00:00</span>
+      <div class="status-icons">
+        <i class="fa-solid fa-signal"></i>
+        <i class="fa-solid fa-wifi"></i>
+        <i class="fa-solid fa-battery-full"></i>
+      </div>
     </div>
 
-    <!-- APP JS LOGIC -->
-    <script>
-        let enteredPasscode = "";
+    <div class="toast-banner" id="toast-banner" onclick="openToastApp()">
+      <div class="toast-icon">💬</div>
+      <div class="toast-content">
+        <div class="toast-title" id="toast-sender">🐱</div>
+        <div class="toast-msg" id="toast-body">문자 봣엉??</div>
+      </div>
+    </div>
 
-        function pressKey(num) {
-            if (enteredPasscode.length < 4) {
-                enteredPasscode += num;
-                updateDots();
-                if (enteredPasscode.length === 4) {
-                    if (enteredPasscode === "0207") {
-                        setTimeout(() => {
-                            document.getElementById('lock-screen').classList.add('-translate-y-full');
-                            setTimeout(() => {
-                                document.getElementById('lock-screen').classList.add('hidden');
-                                document.getElementById('home-screen').classList.remove('hidden');
-                            }, 400);
-                        }, 200);
-                    } else {
-                        alert("비밀번호가 올바르지 않습니다. (0207)");
-                        clearPasscode();
-                    }
-                }
-            }
+    <!-- LOCK SCREEN -->
+    <div class="screen lock-screen" id="screen-lock">
+      <div class="lock-header">
+        <div class="lock-date" id="lock-date">10월 24일 토요일</div>
+        <div class="lock-time" id="lock-clock">00:00</div>
+      </div>
+      <div class="passcode-box">
+        <div class="passcode-title">암호를 입력하세요</div>
+        <div class="dots">
+          <div class="dot" id="dot-0"></div>
+          <div class="dot" id="dot-1"></div>
+          <div class="dot" id="dot-2"></div>
+          <div class="dot" id="dot-3"></div>
+        </div>
+        <div class="keypad">
+          <button onclick="pressPass('1')">1</button>
+          <button onclick="pressPass('2')">2</button>
+          <button onclick="pressPass('3')">3</button>
+          <button onclick="pressPass('4')">4</button>
+          <button onclick="pressPass('5')">5</button>
+          <button onclick="pressPass('6')">6</button>
+          <button onclick="pressPass('7')">7</button>
+          <button onclick="pressPass('8')">8</button>
+          <button onclick="pressPass('9')">9</button>
+          <div></div>
+          <button onclick="pressPass('0')">0</button>
+          <button onclick="pressPass('del')" style="font-size:16px;">취소</button>
+        </div>
+      </div>
+      <div class="lock-bottom-btns">
+        <div class="circle-btn"><i class="fa-solid fa-flashlight"></i></div>
+        <div class="circle-btn"><i class="fa-solid fa-camera"></i></div>
+      </div>
+      <div class="home-indicator white"></div>
+    </div>
+
+    <!-- HOME SCREEN -->
+    <div class="screen home-screen hidden" id="screen-home">
+      <div></div>
+      <div class="app-grid">
+        <button class="app-item" onclick="openApp('photos')">
+          <div class="app-icon" style="background-image: linear-gradient(135deg, #ff9500, #ff2d55, #5856d6); color:#fff;"><i class="fa-solid fa-images"></i></div>
+          <span class="app-name">사진</span>
+        </button>
+        <button class="app-item" onclick="openApp('phone')">
+          <div class="app-icon" style="background: #34c759; color:#fff;"><i class="fa-solid fa-phone"></i></div>
+          <span class="app-name">전화</span>
+        </button>
+        <button class="app-item" onclick="openApp('messages')">
+          <div class="app-icon" style="background: #34c759; color:#fff;"><i class="fa-solid fa-comment"></i></div>
+          <span class="app-name">메시지</span>
+          <div class="badge hidden" id="badge-msg">3</div>
+        </button>
+        <button class="app-item" onclick="openApp('kakao')">
+          <div class="app-icon" style="background: #fee500; color:#3c1e1e;"><i class="fa-solid fa-comment text-2xl"></i></div>
+          <span class="app-name">카카오톡</span>
+          <div class="badge hidden" id="badge-kakao">2</div>
+        </button>
+        <button class="app-item" onclick="openApp('calendar')">
+          <div class="app-icon" style="background: #fff; color:#ff3b30; flex-direction:column; font-size:12px;"><b>토</b><strong style="font-size:22px; color:#000;">24</strong></div>
+          <span class="app-name">캘린더</span>
+        </button>
+        <button class="app-item" onclick="openApp('music')">
+          <div class="app-icon" style="background: linear-gradient(135deg, #fa2d48, #c1272d); color:#fff;"><i class="fa-solid fa-music"></i></div>
+          <span class="app-name">Apple Music</span>
+        </button>
+        <button class="app-item" onclick="openApp('instagram')">
+          <div class="app-icon" style="background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color:#fff;"><i class="fa-brands fa-instagram"></i></div>
+          <span class="app-name">Instagram</span>
+        </button>
+        <button class="app-item" onclick="dummyApp()">
+          <div class="app-icon" style="background: #8e8e93; color:#fff;"><i class="fa-solid fa-gear"></i></div>
+          <span class="app-name">설정</span>
+        </button>
+        <button class="app-item" onclick="dummyApp()">
+          <div class="app-icon" style="background: #636366; color:#fff;"><i class="fa-solid fa-camera"></i></div>
+          <span class="app-name">카메라</span>
+        </button>
+        <button class="app-item" onclick="dummyApp()">
+          <div class="app-icon" style="background: #000; color:#fff; border:1px solid #3a3a3c;"><i class="fa-solid fa-clock"></i></div>
+          <span class="app-name">시계</span>
+        </button>
+      </div>
+
+      <div class="dock">
+        <button class="app-item" onclick="openApp('phone')"><div class="app-icon" style="background: #34c759; color:#fff;"><i class="fa-solid fa-phone"></i></div></button>
+        <button class="app-item" onclick="openApp('messages')"><div class="app-icon" style="background: #34c759; color:#fff;"><i class="fa-solid fa-comment"></i></div></button>
+        <button class="app-item" onclick="openApp('kakao')"><div class="app-icon" style="background: #fee500; color:#3c1e1e;"><i class="fa-solid fa-comment"></i></div></button>
+        <button class="app-item" onclick="openApp('instagram')"><div class="app-icon" style="background: linear-gradient(135deg, #f09433, #dc2743, #bc1888); color:#fff;"><i class="fa-brands fa-instagram"></i></div></button>
+      </div>
+      <div class="home-indicator white" onclick="goHome()"></div>
+    </div>
+
+    <!-- APP VIEW -->
+    <div class="screen hidden" id="screen-app">
+      <div class="app-header" id="app-header">
+        <button class="back-btn" onclick="goHome()"><i class="fa-solid fa-chevron-left"></i> 홈</button>
+        <span id="app-header-title">앱</span>
+        <div style="width:40px;"></div>
+      </div>
+      <div class="app-body" id="app-body"></div>
+      <div class="home-indicator" onclick="goHome()"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const ASSETS = {
+      lock_bg: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
+      home_bg: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
+      yuma_profile: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
+      applemusic_cover: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4887.jpeg',
+      photos: [
+        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
+        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4887.jpeg',
+        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234617_2465981427.jpeg',
+        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234653_3116113101.jpeg',
+        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234703_929747686.jpeg'
+      ],
+      ig_post1: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
+      ig_post2: [
+        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234617_2465981427.jpeg',
+        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234645_1436093600.mp4',
+        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234653_3116113101.jpeg',
+        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234703_929747686.jpeg'
+      ]
+    };
+
+    const defaultMessages = [
+      { sender: 'yuma', text: 'ナ ユウマ', time: '어제' },
+      { sender: 'yuma', text: '나 일본 다녀올겡~', time: '어제' },
+      { sender: 'me', text: '몸 조심히 다녀와~', time: '어제' },
+      { sender: 'me', text: '밥 잘 챙겨 먹고!', time: '어제' },
+      { sender: 'yuma', text: '今日は寿司🍣', time: '어제' },
+      { sender: 'yuma', text: '초밥 먹을거양', time: '어제' },
+      { sender: 'yuma', text: '@@도 맛있는 거 많이 먹엉~', time: '어제' },
+      { sender: 'yuma', text: '早く会いたい', time: '어제' },
+      { sender: 'me', text: '한국 언제와…', time: '어제' },
+      { sender: 'me', text: '나도 일본갈까 그냥ㅋㅋ', time: '어제' },
+      { sender: 'yuma', text: '나 오늘 한국 가~', time: '어제' },
+      { sender: 'yuma', text: '보고싶엇징', time: '어제' },
+      { sender: 'me', text: '보구싶다', time: '어제' },
+      { sender: 'yuma', text: '오늘 잠깐 볼까 그러면', time: '어제' },
+      { sender: 'me', text: '진짜?', time: '어제' },
+      { sender: 'yuma', text: 'うん', time: '어제' },
+      { sender: 'yuma', text: '조심히 들어강', time: '어제' },
+      { sender: 'yuma', text: 'だいすーーーき', time: '어제' },
+      { sender: 'yuma', text: '사랑해~~~~😚😚😚😚', time: '어제' },
+      { sender: 'yuma', text: 'おはよん', time: '오늘 22:20', unread: true },
+      { sender: 'yuma', text: '아침밥 먹었어?', time: '오늘 22:21', unread: true },
+      { sender: 'yuma', text: '머해용', time: '오늘 22:22', unread: true }
+    ];
+
+    const defaultKakao = [
+      { sender: 'yuma', text: '(사진)', type: 'img', src: ASSETS.photos[2] },
+      { sender: 'yuma', text: '나 어렷을 때ㅋㅋㅋㅋ' },
+      { sender: 'yuma', text: '어릴 때 사진 보여줘' },
+      { sender: 'me', text: 'ㅋㅋㅋㅋㅋ귀여워😭😭' },
+      { sender: 'me', text: '나 어릴때 사진? 엄마한테 물어보께' },
+      { sender: 'yuma', text: 'ㅋㅋㅋㅋㅋうん' },
+      { sender: 'yuma', text: '보고싶엉~ 나 연습중' },
+      { sender: 'yuma', text: '(사진)', type: 'img', src: ASSETS.photos[3] },
+      { sender: 'me', text: '나도ㅜㅜ 유마 보고싶어' },
+      { sender: 'yuma', text: '연습 끝나구 잠깐 볼까?' },
+      { sender: 'yuma', text: '(사진)', type: 'img', src: ASSETS.photos[4] },
+      { sender: 'yuma', text: '우리 같이 엽떡 먹엇을 때 찍은거' },
+      { sender: 'me', text: 'ㅋㅋㅋㅋㅋㅋ엨ㅋㅋㅋㅋㅋㅋ' },
+      { sender: 'me', text: '언제찍었어!!!! 나 왜 몰랏지' },
+      { sender: 'yuma', text: '몰래 찍었징~ 나 운동하고 올게용' },
+      { sender: 'me', text: '웅 팟팅' },
+      { sender: 'yuma', text: '사랑행' },
+      { sender: 'me', text: '나도얌' },
+      { sender: 'yuma', text: '今日はもう침대' },
+      { sender: 'yuma', text: '우리 못봐서 할게 없엉…' },
+      { sender: 'yuma', text: '나 지금 한국 갈까ㅋㅋㅋ😚' },
+      { sender: 'yuma', text: '자?' },
+      { sender: 'yuma', text: 'おやすみ' },
+      { sender: 'yuma', text: '今日もだいすき' },
+      { sender: 'yuma', text: '🌙🌙😽' },
+      { sender: 'yuma', text: '뭐가!!🤨' },
+      { sender: 'yuma', text: 'ㅋㅋㅋㅋㅋ 보고싶어서 보내봣엉~~' },
+      { sender: 'yuma', text: '한국 많이 춥지?' },
+      { sender: 'yuma', text: '따뜻하게 입어야돼 ㅡㅡ' },
+      { sender: 'me', text: '그럼용 유마도 따뜻하게 입어!!!' },
+      { sender: 'yuma', text: '風邪ひかないようにねん' },
+      { sender: 'yuma', text: '오늘도 힘내쟝' },
+      { sender: 'yuma', text: '사랑해' }
+    ];
+
+    let state = {
+      passcode: '',
+      unlocked: false,
+      messages: JSON.parse(localStorage.getItem('yuma_msg')) || defaultMessages,
+      kakao: JSON.parse(localStorage.getItem('yuma_kakao')) || defaultKakao,
+      msgUnread: parseInt(localStorage.getItem('yuma_msg_unread') ?? '3'),
+      kakaoUnread: parseInt(localStorage.getItem('yuma_kakao_unread') ?? '2'),
+      likedPosts: JSON.parse(localStorage.getItem('yuma_likes')) || [false, false],
+      currentApp: '',
+      toastTriggered: [false, false]
+    };
+
+    function saveState() {
+      localStorage.setItem('yuma_msg', JSON.stringify(state.messages));
+      localStorage.setItem('yuma_kakao', JSON.stringify(state.kakao));
+      localStorage.setItem('yuma_msg_unread', state.msgUnread);
+      localStorage.setItem('yuma_kakao_unread', state.kakaoUnread);
+      localStorage.setItem('yuma_likes', JSON.stringify(state.likedPosts));
+    }
+
+    window.onload = () => {
+      document.getElementById('screen-lock').style.backgroundImage = `url('${ASSETS.lock_bg}')`;
+      document.getElementById('screen-home').style.backgroundImage = `url('${ASSETS.home_bg}')`;
+      updateClock();
+      setInterval(updateClock, 1000);
+      updateBadges();
+
+      if (!sessionStorage.getItem('visited')) {
+        setTimeout(() => {
+          showToast('시스템 알림', '해당 사이트는 가상 시뮬레이션입니다.');
+          sessionStorage.setItem('visited', 'true');
+        }, 800);
+      }
+    };
+
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+      document.getElementById('clock-time').textContent = timeStr;
+      document.getElementById('lock-clock').textContent = timeStr;
+      const dateStr = now.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' });
+      document.getElementById('lock-date').textContent = dateStr;
+    }
+
+    function pressPass(val) {
+      if (val === 'del') {
+        state.passcode = '';
+      } else if (state.passcode.length < 4) {
+        state.passcode += val;
+      }
+      for (let i = 0; i < 4; i++) {
+        document.getElementById(`dot-${i}`).classList.toggle('filled', i < state.passcode.length);
+      }
+      if (state.passcode.length === 4) {
+        if (state.passcode === '0207') {
+          setTimeout(() => {
+            document.getElementById('screen-lock').classList.add('hidden');
+            document.getElementById('screen-home').classList.remove('hidden');
+            state.unlocked = true;
+            triggerKakaoToasts();
+          }, 150);
+        } else {
+          setTimeout(() => {
+            alert('비밀번호가 올바르지 않습니다. (0207)');
+            state.passcode = '';
+            for (let i = 0; i < 4; i++) document.getElementById(`dot-${i}`).classList.remove('filled');
+          }, 200);
         }
+      }
+    }
 
-        function clearPasscode() {
-            enteredPasscode = "";
-            updateDots();
+    function triggerKakaoToasts() {
+      if (state.currentApp === 'kakao') return;
+      setTimeout(() => {
+        if (!state.toastTriggered[0] && state.currentApp !== 'kakao') {
+          showToast('🐱', '문자 봣엉??');
+          state.toastTriggered[0] = true;
         }
+      }, 10000);
 
-        function updateDots() {
-            const dots = document.getElementById('passcode-dots').children;
-            for (let i = 0; i < 4; i++) {
-                if (i < enteredPasscode.length) {
-                    dots[i].classList.add('bg-white');
-                } else {
-                    dots[i].classList.remove('bg-white');
-                }
-            }
+      setTimeout(() => {
+        if (!state.toastTriggered[1] && state.currentApp !== 'kakao') {
+          showToast('🐱', 'メッセージ!!!🤨');
+          state.toastTriggered[1] = true;
         }
+      }, 20000);
+    }
 
-        function goHome() {
-            document.getElementById('app-view').classList.add('hidden');
-            document.getElementById('home-screen').classList.remove('hidden');
+    function showToast(sender, body) {
+      document.getElementById('toast-sender').textContent = sender;
+      document.getElementById('toast-body').textContent = body;
+      const toast = document.getElementById('toast-banner');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    function openToastApp() {
+      document.getElementById('toast-banner').classList.remove('show');
+      openApp('kakao');
+    }
+
+    function openApp(appName) {
+      state.currentApp = appName;
+      document.getElementById('screen-home').classList.add('hidden');
+      document.getElementById('screen-app').classList.remove('hidden');
+      document.getElementById('status-bar').classList.add('dark');
+
+      const body = document.getElementById('app-body');
+      const title = document.getElementById('app-header-title');
+
+      if (appName === 'photos') renderPhotos(body, title);
+      else if (appName === 'phone') renderPhone(body, title);
+      else if (appName === 'messages') renderMessages(body, title);
+      else if (appName === 'kakao') renderKakao(body, title);
+      else if (appName === 'calendar') renderCalendar(body, title);
+      else if (appName === 'music') renderMusic(body, title);
+      else if (appName === 'instagram') renderInstagram(body, title);
+    }
+
+    function goHome() {
+      state.currentApp = '';
+      document.getElementById('screen-app').classList.add('hidden');
+      document.getElementById('screen-home').classList.remove('hidden');
+      document.getElementById('status-bar').classList.remove('dark');
+      updateBadges();
+    }
+
+    function dummyApp() { alert('이 앱은 시뮬레이션에서 사용할 수 없습니다.'); }
+
+    function updateBadges() {
+      const bMsg = document.getElementById('badge-msg');
+      const bKa = document.getElementById('badge-kakao');
+      if (state.msgUnread > 0) { bMsg.textContent = state.msgUnread; bMsg.classList.remove('hidden'); }
+      else bMsg.classList.add('hidden');
+      if (state.kakaoUnread > 0) { bKa.textContent = state.kakaoUnread; bKa.classList.remove('hidden'); }
+      else bKa.classList.add('hidden');
+    }
+
+    function renderPhotos(body, title) {
+      title.textContent = '보관함';
+      let html = `<div class="photo-grid">`;
+      ASSETS.photos.forEach((src) => {
+        html += `<button class="photo-thumb" style="background-image:url('${src}')" onclick="viewPhoto('${src}')"></button>`;
+      });
+      html += `</div>`;
+      body.innerHTML = html;
+    }
+
+    function viewPhoto(src) {
+      const body = document.getElementById('app-body');
+      body.innerHTML += `
+        <div class="photo-viewer" id="pv" onclick="document.getElementById('pv').remove()">
+          <img src="${src}">
+        </div>`;
+    }
+
+    function renderPhone(body, title) {
+      title.textContent = '최근 통화';
+      const calls = [
+        ["ユウマ 🐱🖤", "발신 통화", "오늘"],
+        ["민서", "발신", "어제"],
+        ["ユウマ🐱🖤", "수신 통화", "어제"],
+        ["ユウマ🐱🖤", "부재중 전화 3회", "어제", true],
+        ["엄마♥", "수신", "월요일"],
+        ["민서", "발신", "일요일"],
+        ["ユウマ🐱🖤", "발신", "일요일"],
+        ["ユウマ🐱🖤", "발신", "토요일"],
+        ["아빠♥", "수신", "금요일"]
+      ];
+
+      let html = `<div>`;
+      calls.forEach(c => {
+        html += `
+          <div style="padding:12px 16px; display:flex; justify-content:space-between; align-items:center; border-bottom:0.5px solid #e5e5ea;" onclick="openContact('${c[0]}')">
+            <div>
+              <div style="font-weight:600; font-size:16px; color:${c[3]?'#ff3b30':'#000'};">${c[0]}</div>
+              <div style="font-size:13px; color:#8e8e93; margin-top:2px;">${c[1]}</div>
+            </div>
+            <div style="font-size:13px; color:#8e8e93;">${c[2]}</div>
+          </div>`;
+      });
+      html += `</div>`;
+      body.innerHTML = html;
+    }
+
+    function openContact(name) {
+      if (!name.includes('ユウマ')) { alert('이 연락처는 비활성화되어 있습니다.'); return; }
+      const body = document.getElementById('app-body');
+      body.innerHTML = `
+        <div style="padding:20px; text-align:center;">
+          <div style="width:90px; height:90px; border-radius:50%; background-image:url('${ASSETS.yuma_profile}'); background-size:cover; margin:0 auto 12px;"></div>
+          <h2 style="font-size:22px; font-weight:700;">ユウマ🐱🖤</h2>
+          <div style="display:flex; justify-content:center; gap:16px; margin:20px 0;">
+            <button onclick="openApp('messages')" style="padding:10px 18px; border-radius:12px; border:none; background:#007aff; color:#fff; font-weight:600;">메시지</button>
+            <button onclick="startCall()" style="padding:10px 18px; border-radius:12px; border:none; background:#34c759; color:#fff; font-weight:600;">음성 통화</button>
+          </div>
+        </div>`;
+    }
+
+    function startCall() {
+      const body = document.getElementById('app-body');
+      body.innerHTML = `
+        <div class="call-screen">
+          <div style="text-align:center;">
+            <div class="call-avatar" style="background-image:url('${ASSETS.yuma_profile}')"></div>
+            <h2 style="font-size:24px; font-weight:600;">ユウマ🐱🖤</h2>
+            <p style="color:#8e8e93; margin-top:6px;" id="call-status">연결 중…</p>
+          </div>
+          <button onclick="endCall()" style="width:64px; height:64px; border-radius:50%; border:none; background:#ff3b30; color:#fff; font-size:24px;"><i class="fa-solid fa-phone-slash"></i></button>
+        </div>`;
+
+      setTimeout(() => {
+        document.getElementById('call-status').textContent = '통화 중 00:02';
+        setTimeout(() => { endCall(); }, 8000);
+      }, 2000);
+    }
+
+    function endCall() {
+      if (!localStorage.getItem('yuma_call_msg_sent')) {
+        state.messages.push({ sender: 'yuma', text: '연습 중!', time: '방금', unread: true });
+        state.msgUnread++;
+        localStorage.setItem('yuma_call_msg_sent', 'true');
+        saveState();
+      }
+      openContact('ユウマ🐱🖤');
+    }
+
+    function renderMessages(body, title) {
+      title.textContent = '메시지';
+      state.msgUnread = 0;
+      saveState();
+
+      let html = `<div style="display:flex; flex-direction:column; height:100%;">
+        <div class="chat-container" id="msg-box" style="flex:1; overflow-y:auto;">`;
+      
+      state.messages.forEach(m => {
+        html += `<div class="bubble ${m.sender==='me'?'out':'in'}">${m.text}</div>`;
+      });
+
+      html += `</div>
+        <form onsubmit="sendMsg(event)" class="chat-input-bar">
+          <input type="text" id="msg-input" placeholder="메시지 보내기… 예: 나 지금 일어났어ㅠㅠ…" autocomplete="off">
+          <button type="submit">↑</button>
+        </form>
+      </div>`;
+      body.innerHTML = html;
+      const box = document.getElementById('msg-box');
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function sendMsg(e) {
+      e.preventDefault();
+      const input = document.getElementById('msg-input');
+      const txt = input.value.trim();
+      if (!txt) return;
+
+      state.messages.push({ sender: 'me', text: txt, time: '방금' });
+      saveState();
+      renderMessages(document.getElementById('app-body'), document.getElementById('app-header-title'));
+
+      if (txt === '나 이제 일어남…' || txt === '나 이제 일어남') {
+        setTimeout(() => {
+          state.messages.push({ sender: 'yuma', text: 'ㅋㅋㅋ 잘햇엉', time: '방금' });
+          saveState();
+          if (state.currentApp === 'messages') renderMessages(document.getElementById('app-body'), document.getElementById('app-header-title'));
+          
+          setTimeout(() => {
+            state.messages.push({ sender: 'yuma', text: '잘잤어??', time: '방금' });
+            saveState();
+            if (state.currentApp === 'messages') renderMessages(document.getElementById('app-body'), document.getElementById('app-header-title'));
+          }, 1500);
+        }, 10000);
+      }
+    }
+
+    function renderKakao(body, title) {
+      title.textContent = '카카오톡';
+      state.kakaoUnread = 0;
+      saveState();
+
+      let html = `<div style="display:flex; flex-direction:column; height:100%;">
+        <div style="background:#abc1d1; padding:10px 16px; border-bottom:0.5px solid #9bb1c1; font-weight:700; display:flex; justify-content:space-between; align-items:center;">
+          <span>🐱 유마</span>
+          <div style="display:flex; gap:14px; font-size:18px;">
+            <i class="fa-solid fa-phone" onclick="startCall()" style="cursor:pointer;"></i>
+            <i class="fa-solid fa-video" style="opacity:0.5;"></i>
+            <i class="fa-solid fa-bars" style="opacity:0.5;"></i>
+          </div>
+        </div>
+        <div class="chat-container kakao" id="kakao-box" style="flex:1; overflow-y:auto;">`;
+
+      state.kakao.forEach(k => {
+        if (k.type === 'img') {
+          html += `<div class="bubble ${k.sender==='me'?'out':'in'}" style="padding:4px; background:transparent;"><img src="${k.src}" style="width:160px; border-radius:12px;"></div>`;
+        } else {
+          html += `<div class="bubble ${k.sender==='me'?'out':'in'}">${k.text}</div>`;
         }
+      });
 
-        function openApp(appName) {
-            const appView = document.getElementById('app-view');
-            const appContent = document.getElementById('app-content');
-            appView.classList.remove('hidden');
+      html += `</div>
+        <form onsubmit="sendKakao(event)" class="chat-input-bar">
+          <input type="text" id="kakao-input" placeholder="메시지 보내기… 예: 나 지금 일어났어ㅠㅠ…" autocomplete="off">
+          <button type="submit" style="background:#fee500; color:#000;">↑</button>
+        </form>
+      </div>`;
+      body.innerHTML = html;
+      const box = document.getElementById('kakao-box');
+      box.scrollTop = box.scrollHeight;
+    }
 
-            if (appName === 'photos') {
-                let imgs = MEDIA_CONFIG.photos_app.map(url => `<img src="${url}" class="w-full h-28 object-cover rounded-lg">`).join('');
-                appContent.innerHTML = `
-                    <div class="p-4">
-                        <h2 class="text-2xl font-bold mb-4">보관함</h2>
-                        <div class="grid grid-cols-3 gap-2">${imgs}</div>
-                    </div>`;
-            } else if (appName === 'instagram') {
-                let p2Media = MEDIA_CONFIG.instagram_post2.map(url => {
-                    if(url.endsWith('.mp4')) {
-                        return `<video src="${url}" controls class="w-full h-80 object-cover"></video>`;
-                    }
-                    return `<img src="${url}" class="w-full h-80 object-cover">`;
-                }).join('');
+    function sendKakao(e) {
+      e.preventDefault();
+      const input = document.getElementById('kakao-input');
+      const txt = input.value.trim();
+      if (!txt) return;
+      state.kakao.push({ sender: 'me', text: txt });
+      saveState();
+      renderKakao(document.getElementById('app-body'), document.getElementById('app-header-title'));
+    }
 
-                appContent.innerHTML = `
-                    <div class="bg-black text-white min-h-full">
-                        <div class="p-3 border-b border-gray-800 flex justify-between items-center">
-                            <span class="font-bold text-lg">Instagram</span>
-                            <i class="fa-regular fa-heart text-xl"></i>
-                        </div>
-                        <div class="p-3 flex items-center space-x-3">
-                            <img src="${MEDIA_CONFIG.profile_img}" class="w-8 h-8 rounded-full">
-                            <span class="font-semibold text-sm">yuma_andteam</span>
-                        </div>
-                        <img src="${MEDIA_CONFIG.instagram_post1[0]}" class="w-full h-80 object-cover">
-                        <div class="p-3 text-sm"><span class="font-semibold">yuma_andteam</span> &TEAM Yuma 🖤</div>
-                        
-                        <div class="p-3 flex items-center space-x-3 mt-4">
-                            <img src="${MEDIA_CONFIG.profile_img}" class="w-8 h-8 rounded-full">
-                            <span class="font-semibold text-sm">yuma_andteam</span>
-                        </div>
-                        <div class="overflow-x-auto flex space-x-2 no-scrollbar">${p2Media}</div>
-                    </div>`;
-            } else if (appName === 'kakaotalk') {
-                appContent.innerHTML = `
-                    <div class="bg-[#B2C7DA] min-h-full p-4 text-black">
-                        <div class="bg-white/80 backdrop-blur p-3 rounded-xl mb-4 text-center font-bold">유마 &TEAM</div>
-                        <div class="space-y-3">
-                            <div class="flex items-start space-x-2">
-                                <img src="${MEDIA_CONFIG.profile_img}" class="w-8 h-8 rounded-full">
-                                <div class="bg-white p-2.5 rounded-xl max-w-[70%] text-sm">안녕! 오늘 사진 보내줄게~</div>
-                            </div>
-                            <div class="flex items-start space-x-2">
-                                <img src="${MEDIA_CONFIG.profile_img}" class="w-8 h-8 rounded-full">
-                                <img src="${MEDIA_CONFIG.kakaotalk_chat_images.childhood}" class="w-48 rounded-xl">
-                            </div>
-                        </div>
-                    </div>`;
-            } else if (appName === 'music') {
-                appContent.innerHTML = `
-                    <div class="p-6 flex flex-col items-center justify-center min-h-full">
-                        <img src="${MEDIA_CONFIG.applemusic_cover}" class="w-64 h-64 rounded-2xl shadow-2xl mb-6">
-                        <h2 class="text-xl font-bold">War Cry</h2>
-                        <p class="text-gray-400 text-sm mt-1">&TEAM</p>
-                        <div class="flex items-center space-x-8 mt-8 text-2xl">
-                            <i class="fa-solid fa-backward"></i>
-                            <i class="fa-solid fa-play text-4xl"></i>
-                            <i class="fa-solid fa-forward"></i>
-                        </div>
-                    </div>`;
-            }
-        }
-    </script>
+    function renderCalendar(body, title) {
+      title.textContent = '캘린더';
+      body.innerHTML = `
+        <div style="padding:20px;">
+          <h2 style="font-size:22px; font-weight:700; margin-bottom:16px;">2027년 2월</h2>
+          <div style="background:#f2f2f7; border-radius:16px; padding:16px; border:1px solid #e5e5ea;">
+            <div style="color:#ff3b30; font-weight:700; font-size:18px;">2월 7일 일요일</div>
+            <div style="font-size:16px; font-weight:600; margin-top:6px;">유마 생일🎂</div>
+            <div style="font-size:13px; color:#8e8e93; margin-top:2px;">하루 종일</div>
+          </div>
+        </div>`;
+    }
+
+    function renderMusic(body, title) {
+      title.textContent = 'Apple Music';
+      const songs = [
+        ["죠지", "언제든 어디라도"],
+        ["죠지", "좋아해.."],
+        ["keshi", "Kiss Me Right"],
+        ["DEAN", "What 2 Do"],
+        ["back number", "Heroine"]
+      ];
+
+      let html = `
+        <div style="padding:20px;">
+          <div style="display:flex; gap:16px; align-items:center; margin-bottom:24px;">
+            <img src="${ASSETS.applemusic_cover}" style="width:100px; height:100px; border-radius:12px; object-fit:cover; box-shadow:0 8px 20px rgba(0,0,0,0.15);">
+            <div>
+              <h2 style="font-size:20px; font-weight:700;">🖤</h2>
+              <p style="color:#8e8e93; font-size:14px; margin-top:4px;">플레이리스트</p>
+            </div>
+          </div>
+          <div>`;
+
+      songs.forEach(s => {
+        html += `
+          <div style="padding:12px 0; border-bottom:0.5px solid #e5e5ea; display:flex; justify-content:space-between; align-items:center;" onclick="window.open('https://music.apple.com/kr/search?term=${encodeURIComponent(s[0]+' '+s[1])}')">
+            <div>
+              <div style="font-weight:600; font-size:15px;">${s[1]}</div>
+              <div style="font-size:13px; color:#8e8e93; margin-top:2px;">${s[0]}</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color:#c7c7cc; font-size:12px;"></i>
+          </div>`;
+      });
+
+      html += `</div></div>`;
+      body.innerHTML = html;
+    }
+
+    function renderInstagram(body, title) {
+      title.textContent = 'Instagram';
+      let html = `
+        <div style="padding-bottom:20px;">
+          <div style="border-bottom:1px solid #e5e5ea; padding-bottom:12px; margin-bottom:16px;">
+            <div style="padding:10px 14px; font-weight:700; font-size:14px;">nyang2777</div>
+            <img src="${ASSETS.ig_post1}" style="width:100%; height:320px; object-fit:cover;">
+            <div style="padding:10px 14px;">
+              <i class="${state.likedPosts[0]?'fa-solid fa-heart':'fa-regular fa-heart'}" style="font-size:22px; color:${state.likedPosts[0]?'#ff3b30':'#000'}; cursor:pointer;" onclick="toggleLike(0)"></i>
+              <div style="font-size:14px; margin-top:6px;"><b>nyang2777</b> 이분 밤새고 한국 오셔서 피곤하시다네요..</div>
+            </div>
+          </div>
+
+          <div>
+            <div style="padding:10px 14px; font-weight:700; font-size:14px;">nyang2777</div>
+            <div style="display:flex; overflow-x:auto; gap:4px; padding:0 14px;">
+              <img src="${ASSETS.ig_post2[0]}" style="width:260px; height:280px; object-fit:cover; border-radius:8px; flex-shrink:0;">
+              <video src="${ASSETS.ig_post2[1]}" controls style="width:260px; height:280px; object-fit:cover; border-radius:8px; flex-shrink:0;"></video>
+              <img src="${ASSETS.ig_post2[2]}" style="width:260px; height:280px; object-fit:cover; border-radius:8px; flex-shrink:0;">
+              <img src="${ASSETS.ig_post2[3]}" style="width:260px; height:280px; object-fit:cover; border-radius:8px; flex-shrink:0;">
+            </div>
+            <div style="padding:10px 14px;">
+              <i class="${state.likedPosts[1]?'fa-solid fa-heart':'fa-regular fa-heart'}" style="font-size:22px; color:${state.likedPosts[1]?'#ff3b30':'#000'}; cursor:pointer;" onclick="toggleLike(1)"></i>
+              <div style="font-size:14px; margin-top:6px;"><b>nyang2777</b> 고양이랑 머근 밥</div>
+              <div style="font-size:13px; color:#3a3a3c; margin-top:6px; background:#f2f2f7; padding:8px 12px; border-radius:10px;">
+                <b>2nakakita7</b> なんでやねん！！😒
+              </div>
+            </div>
+          </div>
+        </div>`;
+      body.innerHTML = html;
+    }
+
+    function toggleLike(idx) {
+      state.likedPosts[idx] = !state.likedPosts[idx];
+      saveState();
+      renderInstagram(document.getElementById('app-body'), document.getElementById('app-header-title'));
+    }
+  </script>
 </body>
 </html>
