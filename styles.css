@@ -22,7 +22,7 @@ height: 100%;
 margin: 0;
 overflow: hidden;
 font-family: -apple-system, BlinkMacSystemFont, “Helvetica Neue”, Arial, sans-serif;
-color: var(–ios-text);
+color: var(--ios-text);
 background: #111;
 }
 
@@ -39,10 +39,9 @@ cursor: pointer;
 }
 
 button:focus-visible {
-outline: 2px solid var(–ios-blue);
+outline: 2px solid var(--ios-blue);
 outline-offset: 3px;
 }
-
 .hidden {
 display: none !important;
 }
