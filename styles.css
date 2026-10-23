@@ -10,8 +10,31 @@ body{margin:0;background:#e8e5ec}
 .lock-subtitle{text-align:center;margin-top:12px;font-size:13px;color:#fff9}
 .passcode-box{position:absolute;left:0;right:0;bottom:85px;text-align:center}
 .dots{letter-spacing:8px;margin:18px}
-.keypad{display:grid;grid-template-columns:repeat(3,72px);justify-content:center;gap:12px}
-.keypad button{height:58px;border:0;border-radius:50%;background:#ffffff72;color:#fff;font-size:24px}
+..keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  justify-content: center;
+  gap: 12px;
+  min-height: 198px;
+  visibility: visible;
+  opacity: 1;
+}
+
+.keypad button {
+  display: block;
+  width: 72px;
+  height: 58px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  color: white;
+  font-size: 24px;
+  -webkit-appearance: none;
+}
+
+.keypad button:disabled {
+  visibility: hidden;
+}
 .text-button{background:none;border:0;color:white;margin-top:12px}
 .tiny-note{position:absolute;bottom:18px;text-align:center;width:100%;font-size:10px;color:#fff9}
 .home-screen{background:linear-gradient(160deg,#c7d7d8,#f2dfe5 48%,#d7d1ed)}
