@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+ㅕdocument.addEventListener("DOMContentLoaded", () => {
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 
@@ -380,9 +380,9 @@ if (localStorage.getItem("yumaNewTextsV1") !== "done") {
   }
   /* 카카오톡: 유마와 민서 채팅방 모두 유지 */
 function renderKakao() {
-setTitle(“KakaoTalk”);
-setView(“kakao-home”);
-content.innerHTML = “”;
+setTitle("KakaoTalk");
+setView("kakao-home");
+content.innerHTML = "";
 
 const page = card("ios-page kakao-page");
 page.innerHTML = `
@@ -541,7 +541,7 @@ content.appendChild(tabs);
 
 /* 유우마에게 가상 전화 걸기 */
 function startCall(name) {
-if (name !== “ユウマ🐱🖤”) return;
+if (name !== "ユウマ🐱🖤") return;
 
 content.innerHTML = `
   <section class="ios-call-screen phone-active-call">
@@ -574,7 +574,7 @@ $("#end-call").addEventListener("click", finishCall);
 
 /* 상단 알림 표시 */
 function showCallNotification() {
-const old = document.getElementById(“yuma-call-notification”);
+const old = document.getElementById("yuma-call-notification");
 if (old) old.remove();
 
 const notification = document.createElement("div");
