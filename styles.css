@@ -10,20 +10,24 @@ body{margin:0;background:#e8e5ec}
 .lock-subtitle{text-align:center;margin-top:12px;font-size:13px;color:#fff9}
 .passcode-box{position:absolute;left:0;right:0;bottom:85px;text-align:center}
 .dots{letter-spacing:8px;margin:18px}
-..keypad {
-  display: grid;
-  grid-template-columns: repeat(3, 72px);
+#keypad {
+  display: grid !important;
+  grid-template-columns: repeat(3, 72px) !important;
+  grid-auto-flow: row;
   justify-content: center;
+  align-items: center;
   gap: 12px;
-  min-height: 198px;
-  visibility: visible;
-  opacity: 1;
+  width: 100%;
+  margin: 18px auto;
 }
-
-.keypad button {
-  display: block;
+#keypad button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 72px;
   height: 58px;
+  margin: 0;
+  padding: 0;
   border: 0;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.45);
@@ -31,7 +35,9 @@ body{margin:0;background:#e8e5ec}
   font-size: 24px;
   -webkit-appearance: none;
 }
-
+#keypad button:disabled {
+  visibility: hidden;
+}
 .keypad button:disabled {
   visibility: hidden;
 }
