@@ -493,10 +493,11 @@ replies.forEach((reply, index) => {
       updateMessageBadge();
       showMessageNotification(reply);
     }
-  }, 1200 + index * 1800);
+    }, 1200 + index * 1800);
 });
-
 }
+/* 카카오톡: 유마와 민서 채팅방 모두 유지 */
+function renderKakao() {
   /* 카카오톡: 유마와 민서 채팅방 모두 유지 */
 function renderKakao() {
 setTitle("KakaoTalk");
