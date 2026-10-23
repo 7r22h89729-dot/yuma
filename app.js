@@ -378,45 +378,92 @@ if (localStorage.getItem("yumaNewTextsV1") !== "done") {
       input.focus();
     });
   }
-   /* 카카오톡: 유마와 민서 채팅방 모두 유지 */
-  function renderKakao() {
-    setTitle("KakaoTalk"); setView("kakao-home"); content.innerHTML = "";
-    const page = card("ios-page kakao-page");
-    page.innerHTML = `<div class="ios-page-top"><h2 class="ios-large-title">채팅</h2><span>＋</span></div><input class="ios-search" id="kakao-search" placeholder="이름 또는 채팅 검색"><div id="kakao-chat-list"></div>`;
-    content.appendChild(page);
-    const chatList = $("#kakao-chat-list", page);
+  /* 카카오톡: 유마와 민서 채팅방 모두 유지 */
+function renderKakao() {
+setTitle(“KakaoTalk”);
+setView(“kakao-home”);
+content.innerHTML = “”;
 
-    function draw(filter = "") {
-      chatList.innerHTㅐ "ios-conversation";
-
-          const avatar = person.avatar
-            ? `<span class="ios-avatar">🐱</span>`
-            : `<span class="ios-avatar default-avatar"><span></span></span>`;
-
-          row.innerHTML = `${avatar}<span class="ios-conversation-info"><strong>${escapeHTML(person.name)}</strong><small>${escapeHTML(person.preview)}</small></span><span class="ios-chevron">›</span>`;
-          row.addEventListener("click", () => renderChat("kakao", person.id));
-          chatList.appendChild(row);
-        });
+const page = card("ios-page kakao-page");
+page.innerHTML = `
+  <div class="ios-page-top">
+    <h2 class="ios-large-title">채팅</h2>
+    <span>＋</span>
+  </div>
+  <input
+    class="ios-search"
+    id="kakao-search"
+    placeholder="이름 또는 채팅 검색"
+    autocomplete="off"
+  >
+  <div id="kakao-chat-list"></div>
+`;
+content.appendChild(page);
+const chatList = $("#kakao-chat-list", page);
+function draw(filter = "") {
+  chatList.innerHTML = "";
+  const conversations = [
+    {
+      id: "yuma",
+      name: "ユウマ🐱🖤",
+      preview: yumaKakao.at(-1)?.text || "대화",
+      avatar: "🐱"
+    },
+    {
+      id: "minseo",
+      name: "민서",
+      preview: minseoKakao.at(-1)?.text || "대화",
+      avatar: ""
     }
-
-    draw();
-    $("#kakao-search", page).addEventListener("input", event => draw(event.target.value.trim()));
-
-    const tabs = document.createElement("nav");
-    tabs.className = "ios-tab-bar";
-
-    [["친구","♙"],["채팅","▤"],["오픈채팅","◉"],["더보기","•••"]].forEach(([label, icon]) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.innerHTML = `<span>${icon}</span><small>${label}</small>`;
-      button.addEventListener("click", () => {
-        if (label !== "채팅") showToast("채팅 탭만 준비되어 있어요.");
+  ];
+  conversations
+    .filter(person =>
+      `${person.name} ${person.preview}`
+        .toLowerCase()
+        .includes(filter.toLowerCase())
+    )
+    .forEach(person => {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "ios-conversation";
+      const avatar = person.avatar
+        ? `<span class="ios-avatar">${person.avatar}</span>`
+        : `<span class="ios-avatar default-avatar"><span></span></span>`;
+      row.innerHTML = `
+        ${avatar}
+        <span class="ios-conversation-info">
+          <strong>${escapeHTML(person.name)}</strong>
+          <small>${escapeHTML(person.preview)}</small>
+        </span>
+        <span class="ios-chevron">›</span>
+      `;
+      row.addEventListener("click", () => {
+        renderChat("kakao", person.id);
       });
-      tabs.appendChild(button);
+      chatList.appendChild(row);
     });
+}
+draw();
+$("#kakao-search", page).addEventListener("input", event => {
+  draw(event.target.value.trim());
+});
+const tabs = document.createElement("nav");
+tabs.className = "ios-tab-bar";
+[["친구", "♙"], ["채팅", "▤"], ["오픈채팅", "◉"], ["더보기", "•••"]]
+  .forEach(([label, icon]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.innerHTML = `<span>${icon}</span><small>${label}</small>`;
+    button.addEventListener("click", () => {
+      if (label !== "채팅") {
+        showToast("채팅 탭만 준비되어 있어요.");
+      }
+    });
+    tabs.appendChild(button);
+  });
+page.appendChild(tabs);
 
-    page.appendChild(tabs);
-  }
+}
 /* 전화 앱: 최근 통화 */
 function renderPhone(tab = "recent") {
   setTitle("전화");
