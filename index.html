@@ -3,1624 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>iPhone Yuma Fan Simulation</title>
-    <!-- Tailwind CSS -->
+    <title>Yuma's iPhone</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Font Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        /* iOS Frame Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
-        }
-
-        .phone-shadow {
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 12px #1f2937, 0 0 0 14px #374151;
-        }
-
-        .ios-glass {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        .ios-glass-dark {
-            background: rgba(20, 20, 20, 0.65);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-        }
-
-        .ios-app-icon {
-            transition: transform 0.15s ease, filter 0.15s ease;
-        }
-        .ios-app-icon:active {
-            transform: scale(0.9);
-            filter: brightness(0.8);
-        }
-
-        /* Keypad pulse animation */
-        .keypad-btn:active {
-            background-color: rgba(255, 255, 255, 0.5) !important;
-        }
-
-        /* Lock screen bounce */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-10px); }
-            40%, 80% { transform: translateX(10px); }
-        }
-        .shake-animation {
-            animation: shake 0.4s ease-in-out;
-        }
-
-        /* Push Notification Banner Animation */
-        @keyframes slideDown {
-            0% { transform: translateY(-120%); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes slideUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-120%); opacity: 0; }
-        }
-        .banner-enter {
-            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .banner-exit {
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-900 min-h-screen flex items-center justify-center p-0 md:p-4 overflow-hidden">
+<body class="bg-black text-white flex items-center justify-center min-h-screen p-0 sm:p-4 select-none">
 
-    <!-- APP MEDIA CONFIGURATION OBJECT (Easily updated later) -->
+    <!-- MEDIA CONFIGURATION -->
     <script>
-        // Media Configuration: Change paths or URLs here without modifying app code
         const MEDIA_CONFIG = {
-            lockscreen_bg:'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/BDF00F0C-F33B-4413-A2A5-A9405E51F740.jpeg',
-            homescreen_bg:'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/BDF00F0C-F33B-4413-A2A5-A9405E51F740.jpeg',
-            yuma_profile: 'https://placehold.co/300x300/3b82f6/ffffff?text=YUMA+🐱🖤',
-            mom_profile: 'https://placehold.co/300x300/ef4444/ffffff?text=엄마♥',
-            minseo_profile: 'https://placehold.co/300x300/10b981/ffffff?text=민서',
+            lockscreen_bg: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
+            homescreen_bg: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
+            profile_img: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
             photos_app: [
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/250F3E54-F05A-43D3-A40C-983A722A121E.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/0A370217-E161-49F7-BE3B-20F0DA747BF2.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/2DB5509F-D358-498D-86F0-12F01CC14059.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/968A30C3-9BD9-426A-BC13-472B0D3E67AC.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/8FE6FF34-46C3-400C-A0EA-3D2BC6150EB0.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/BDF00F0C-F33B-4413-A2A5-A9405E51F740.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/FB7E0937-1D5A-4D3B-9A4F-8A3D70F843BE.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20251008141645_2641755535.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20251009171000_1356978576.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261018234844_1974842729.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023232024_411694122.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023232041_3165888363.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023232828_1219252410.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023232850_3242717731.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4866.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4867.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4868.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4869.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4870.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4871.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4872.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4873.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4874.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4876.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_7089.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_7091.jpeg'
-],
-            kakaotalk_photos: [
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20251126233450_4262472879.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023205155_3650302047.jpeg',
-    'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023205202_2544847092.jpeg'
-],
-
-    applemusic_cover: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4887.jpeg',
-    instagram_post1: [
-        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg'
-    ],
-    instagram_post2: [
-        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234617_2465981427.jpeg',
-        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234645_1436093600.mp4',
-        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234653_3116113101.jpeg',
-        'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234703_929747686.jpeg'
-    ]
-};
+                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg',
+                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4887.jpeg',
+                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234617_2465981427.jpeg',
+                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234653_3116113101.jpeg',
+                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234703_929747686.jpeg'
+            ],
+            kakaotalk_chat_images: {
+                childhood: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234617_2465981427.jpeg',
+                practice: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234653_3116113101.jpeg',
+                food: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234703_929747686.jpeg'
+            },
+            applemusic_cover: 'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4887.jpeg',
+            instagram_post1: [
+                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg'
+            ],
+            instagram_post2: [
+                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234617_2465981427.jpeg',
+                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234645_1436093600.mp4',
+                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234653_3116113101.jpeg',
+                'https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/weverse_20261023234703_929747686.jpeg'
+            ]
+        };
     </script>
 
     <!-- Main Phone Frame Container -->
-    <div id="phone-container" class="relative w-full h-full md:w-[390px] md:h-[844px] bg-black md:rounded-[50px] overflow-hidden phone-shadow flex flex-col justify-between select-none">
+    <div id="phone-container" class="relative w-full max-w-[390px] h-[844px] bg-black sm:rounded-[50px] overflow-hidden shadow-2xl border-0 sm:border-[8px] border-gray-800">
         
         <!-- TOP STATUS BAR -->
-        <div id="status-bar" class="absolute top-0 left-0 right-0 h-11 px-6 pt-3 flex justify-between items-center z-50 text-white font-medium text-xs pointer-events-none">
-            <span id="status-time" class="font-semibold text-sm">00:00</span>
-            <!-- Dynamic Notch / Dynamic Island Simulation -->
-            <div class="absolute left-1/2 -translate-x-1/2 top-2 w-28 h-7 bg-black rounded-full flex items-center justify-between px-3">
-                <div class="w-3 h-3 rounded-full bg-slate-900/80"></div>
-                <div class="w-3 h-3 rounded-full bg-blue-900/40 border border-blue-500/30"></div>
+        <div id="status-bar" class="absolute top-0 left-0 w-full h-12 px-7 pt-3 flex justify-between items-center z-50 text-white font-semibold text-xs">
+            <span id="status-time">23:59</span>
+            <div class="w-24 h-5 bg-black rounded-full flex items-center justify-center space-x-1">
+                <div class="w-2.5 h-2.5 rounded-full bg-gray-900"></div>
             </div>
-            <div class="flex items-center gap-1.5">
-                <i class="fa-solid fa-signal text-[11px]"></i>
-                <i class="fa-solid fa-wifi text-[11px]"></i>
-                <i class="fa-solid fa-battery-full text-xs"></i>
+            <div class="flex items-center space-x-1.5">
+                <i class="fa-solid font-bold fa-signal text-[10px]"></i>
+                <i class="fa-solid font-bold fa-wifi text-[10px]"></i>
+                <i class="fa-solid font-bold fa-battery-full text-[12px]"></i>
             </div>
         </div>
 
-        <!-- PUSH NOTIFICATION BANNER CONTAINER -->
-        <div id="notification-container" class="absolute top-12 left-3 right-3 z-50 pointer-events-auto"></div>
+        <!-- LOCK SCREEN -->
+        <div id="lock-screen" class="absolute inset-0 bg-cover bg-center flex flex-col justify-between p-8 pt-16 z-40 transition-transform duration-500" style="background-image: url('https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg');">
+            <div class="flex flex-col items-center text-white mt-4">
+                <i class="fa-solid fa-lock text-xs opacity-70 mb-1"></i>
+                <h1 id="lock-time" class="text-6xl font-light tracking-tight">23:59</h1>
+                <p id="lock-date" class="text-sm font-medium opacity-90 mt-1">10월 24일 토요일</p>
+            </div>
 
-        <!-- FIRST VISIT BANNER NOTICE -->
-        <div id="first-visit-notice" class="hidden absolute bottom-10 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md text-white text-xs px-4 py-2 rounded-full z-[100] transition-opacity duration-500 text-center border border-white/10 shadow-lg w-max">
-            해당 사이트는 가상 시뮬레이션입니다.
+            <!-- Passcode View -->
+            <div class="flex flex-col items-center mb-8">
+                <p class="text-xs text-white/80 mb-4">암호 입력 (0207)</p>
+                <div class="flex space-x-3 mb-6" id="passcode-dots">
+                    <div class="w-3 h-3 rounded-full border border-white"></div>
+                    <div class="w-3 h-3 rounded-full border border-white"></div>
+                    <div class="w-3 h-3 rounded-full border border-white"></div>
+                    <div class="w-3 h-3 rounded-full border border-white"></div>
+                </div>
+                <div class="grid grid-cols-3 gap-4 w-64 text-center">
+                    <button onclick="pressKey('1')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">1</button>
+                    <button onclick="pressKey('2')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">2</button>
+                    <button onclick="pressKey('3')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">3</button>
+                    <button onclick="pressKey('4')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">4</button>
+                    <button onclick="pressKey('5')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">5</button>
+                    <button onclick="pressKey('6')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">6</button>
+                    <button onclick="pressKey('7')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">7</button>
+                    <button onclick="pressKey('8')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">8</button>
+                    <button onclick="pressKey('9')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">9</button>
+                    <div></div>
+                    <button onclick="pressKey('0')" class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-xl text-white font-medium active:bg-white/40">0</button>
+                    <button onclick="clearPasscode()" class="w-16 h-16 rounded-full flex items-center justify-center text-xs text-white">취소</button>
+                </div>
+            </div>
         </div>
 
-        <!-- SCREEN CONTAINER (LOCK SCREEN & HOME APP SCREENS) -->
-        <div id="screen-viewport" class="relative w-full h-full bg-cover bg-center overflow-hidden">
-            
-            <!-- ========================================== -->
-            <!-- 1. LOCK SCREEN VIEW                        -->
-            <!-- ========================================== -->
-            <div id="view-lockscreen" class="absolute inset-0 bg-cover bg-center flex flex-col justify-between p-6 pt-14 text-white z-40 transition-transform duration-300">
-                <div class="flex flex-col items-center mt-4">
-                    <i class="fa-solid fa-lock text-xs mb-1 opacity-80"></i>
-                    <div id="lock-date" class="text-sm font-medium opacity-90">10월 23일 금요일</div>
-                    <div id="lock-time" class="text-7xl font-bold tracking-tight mt-1">00:00</div>
-                </div>
-
-                <!-- Password Keypad Container -->
-                <div id="passcode-container" class="hidden flex flex-col items-center mb-8 w-full max-w-[280px] mx-auto">
-                    <p class="text-sm font-normal mb-4 opacity-90">비밀번호 입력</p>
-                    <div id="passcode-dots" class="flex gap-4 mb-8">
-                        <div class="dot w-3 h-3 rounded-full border border-white"></div>
-                        <div class="dot w-3 h-3 rounded-full border border-white"></div>
-                        <div class="dot w-3 h-3 rounded-full border border-white"></div>
-                        <div class="dot w-3 h-3 rounded-full border border-white"></div>
+        <!-- HOME SCREEN -->
+        <div id="home-screen" class="absolute inset-0 bg-cover bg-center p-6 pt-16 flex flex-col justify-between hidden" style="background-image: url('https://raw.githubusercontent.com/7r22h89729-dot/yuma/main/IMG_4865.jpeg');">
+            <!-- App Grid -->
+            <div class="grid grid-cols-4 gap-5 pt-4">
+                <div onclick="openApp('photos')" class="flex flex-col items-center cursor-pointer">
+                    <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-images text-2xl text-yellow-500"></i>
                     </div>
-                    <!-- Number Pad -->
-                    <div class="grid grid-cols-3 gap-4 w-full">
-                        <button onclick="pressPasscode('1')" class="keypad-btn w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-2xl font-normal flex flex-col items-center justify-center mx-auto">1</button>
-                        <button onclick="pressPasscode('2')" class="keypad-btn w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-2xl font-normal flex flex-col items-center justify-center mx-auto">2<span class="text-[9px] tracking-widest opacity-60 uppercase font-light">ABC</span></button>
-                        <button onclick="pressPasscode('3')" class="keypad-btn w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-2xl font-normal flex flex-col items-center justify-center mx-auto">3<span class="text-[9px] tracking-widest opacity-60 uppercase font-light">DEF</span></button>
-                        <button onclick="pressPasscode('4')" class="keypad-btn w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-2xl font-normal flex flex-col items-center justify-center mx-auto">4<span class="text-[9px] tracking-widest opacity-60 uppercase font-light">GHI</span></button>
-                        <button onclick="pressPasscode('5')" class="keypad-btn w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-2xl font-normal flex flex-col items-center justify-center mx-auto">5<span class="text-[9px] tracking-widest opacity-60 uppercase font-light">JKL</span></button>
-                        <button onclick="pressPasscode('6')" class="keypad-btn w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-2xl font-normal flex flex-col items-center justify-center mx-auto">6<span class="text-[9px] tracking-widest opacity-60 uppercase font-light">MNO</span></button>
-                        <button onclick="pressPasscode('7')" class="keypad-btn w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-2xl font-normal flex flex-col items-center justify-center mx-auto">7<span class="text-[9px] tracking-widest opacity-60 uppercase font-light">PQRS</span></button>
-                        <button onclick="pressPasscode('8')" class="keypad-btn w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-2xl font-normal flex flex-col items-center justify-center mx-auto">8<span class="text-[9px] tracking-widest opacity-60 uppercase font-light">TUV</span></button>
-                        <button onclick="pressPasscode('9')" class="keypad-btn w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-2xl font-normal flex flex-col items-center justify-center mx-auto">9<span class="text-[9px] tracking-widest opacity-60 uppercase font-light">WXYZ</span></button>
-                        <div></div>
-                        <button onclick="pressPasscode('0')" class="keypad-btn w-16 h-16 rounded-full bg-white/20 backdrop-blur-md text-2xl font-normal flex flex-col items-center justify-center mx-auto">0</button>
-                        <button onclick="clearPasscode()" class="text-xs font-normal opacity-80 flex items-center justify-center">취소</button>
-                    </div>
+                    <span class="text-[11px] text-white mt-1 shadow-sm">사진</span>
                 </div>
-
-                <!-- Bottom Lock Screen Actions -->
-                <div id="lock-bottom-actions" class="flex justify-between items-center px-4 mb-4">
-                    <button class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-lg active:bg-white/40"><i class="fa-solid fa-flashlight"></i></button>
-                    <button onclick="showPasscodeUI()" class="text-xs opacity-80 animate-pulse flex items-center gap-1"><i class="fa-solid fa-chevron-up text-[10px]"></i> 스와이프하여 잠금 해제</button>
-                    <button class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-lg active:bg-white/40"><i class="fa-solid fa-camera"></i></button>
+                <div onclick="openApp('instagram')" class="flex flex-col items-center cursor-pointer">
+                    <div class="w-14 h-14 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                        <i class="fa-brands fa-instagram text-3xl text-white"></i>
+                    </div>
+                    <span class="text-[11px] text-white mt-1 shadow-sm">Instagram</span>
+                </div>
+                <div onclick="openApp('kakaotalk')" class="flex flex-col items-center cursor-pointer">
+                    <div class="w-14 h-14 bg-[#FEE500] rounded-2xl flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-comment text-2xl text-[#3C1E1E]"></i>
+                    </div>
+                    <span class="text-[11px] text-white mt-1 shadow-sm">카카오톡</span>
+                </div>
+                <div onclick="openApp('music')" class="flex flex-col items-center cursor-pointer">
+                    <div class="w-14 h-14 bg-gradient-to-b from-pink-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-music text-2xl text-white"></i>
+                    </div>
+                    <span class="text-[11px] text-white mt-1 shadow-sm">Music</span>
                 </div>
             </div>
 
-            <!-- ========================================== -->
-            <!-- 2. HOME SCREEN VIEW                        -->
-            <!-- ========================================== -->
-            <div id="view-homescreen" class="absolute inset-0 bg-cover bg-center p-6 pt-14 hidden z-30 flex flex-col justify-between">
-                <!-- App Grid (10 Apps Specified) -->
-                <div class="grid grid-cols-4 gap-y-6 gap-x-4 mt-2">
-                    
-                    <!-- 1. Photos -->
-                    <div onclick="openApp('photos')" class="ios-app-icon flex flex-col items-center cursor-pointer">
-                        <div class="w-14 h-14 bg-white rounded-2xl p-2 shadow-md flex items-center justify-center relative">
-                            <div class="grid grid-cols-2 gap-0.5 w-full h-full rounded-lg overflow-hidden">
-                                <div class="bg-red-400"></div><div class="bg-yellow-400"></div>
-                                <div class="bg-green-400"></div><div class="bg-blue-400"></div>
-                            </div>
-                        </div>
-                        <span class="text-white text-xs mt-1 drop-shadow font-medium">사진</span>
-                    </div>
+            <!-- Home Bar Indicator -->
+            <div onclick="goHome()" class="w-32 h-1 bg-white/80 rounded-full mx-auto mb-2 cursor-pointer"></div>
+        </div>
 
-                    <!-- 2. Phone -->
-                    <div onclick="openApp('phone')" class="ios-app-icon flex flex-col items-center cursor-pointer">
-                        <div class="w-14 h-14 bg-green-500 rounded-2xl shadow-md flex items-center justify-center text-white text-2xl">
-                            <i class="fa-solid fa-phone"></i>
-                        </div>
-                        <span class="text-white text-xs mt-1 drop-shadow font-medium">전화</span>
-                    </div>
-
-                    <!-- 3. Messages -->
-                    <div onclick="openApp('messages')" class="ios-app-icon flex flex-col items-center cursor-pointer relative">
-                        <div class="w-14 h-14 bg-green-500 rounded-2xl shadow-md flex items-center justify-center text-white text-2xl relative">
-                            <i class="fa-solid fa-comment"></i>
-                            <span id="badge-messages" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center border-2 border-green-500">3</span>
-                        </div>
-                        <span class="text-white text-xs mt-1 drop-shadow font-medium">메시지</span>
-                    </div>
-
-                    <!-- 4. KakaoTalk -->
-                    <div onclick="openApp('kakaotalk')" class="ios-app-icon flex flex-col items-center cursor-pointer relative">
-                        <div class="w-14 h-14 bg-[#FEE500] rounded-2xl shadow-md flex items-center justify-center text-[#371D1E] text-2xl font-bold relative">
-                            💬
-                            <span id="badge-kakaotalk" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center border-2 border-[#FEE500]">0</span>
-                        </div>
-                        <span class="text-white text-xs mt-1 drop-shadow font-medium">카카오톡</span>
-                    </div>
-
-                    <!-- 5. Calendar -->
-                    <div onclick="openApp('calendar')" class="ios-app-icon flex flex-col items-center cursor-pointer">
-                        <div class="w-14 h-14 bg-white rounded-2xl shadow-md flex flex-col items-center justify-center text-slate-800">
-                            <span class="text-[10px] text-red-500 font-bold uppercase" id="home-cal-day">금</span>
-                            <span class="text-xl font-bold -mt-1" id="home-cal-date">23</span>
-                        </div>
-                        <span class="text-white text-xs mt-1 drop-shadow font-medium">캘린더</span>
-                    </div>
-
-                    <!-- 6. Apple Music -->
-                    <div onclick="openApp('applemusic')" class="ios-app-icon flex flex-col items-center cursor-pointer">
-                        <div class="w-14 h-14 bg-gradient-to-tr from-rose-500 to-red-400 rounded-2xl shadow-md flex items-center justify-center text-white text-2xl">
-                            <i class="fa-solid fa-music"></i>
-                        </div>
-                        <span class="text-white text-xs mt-1 drop-shadow font-medium">Apple Music</span>
-                    </div>
-
-                    <!-- 7. Instagram -->
-                    <div onclick="openApp('instagram')" class="ios-app-icon flex flex-col items-center cursor-pointer">
-                        <div class="w-14 h-14 bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 rounded-2xl shadow-md flex items-center justify-center text-white text-2xl">
-                            <i class="fa-brands fa-instagram"></i>
-                        </div>
-                        <span class="text-white text-xs mt-1 drop-shadow font-medium">Instagram</span>
-                    </div>
-
-                    <!-- 8. Settings (Disabled) -->
-                    <div class="ios-app-icon flex flex-col items-center opacity-70">
-                        <div class="w-14 h-14 bg-slate-400 rounded-2xl shadow-md flex items-center justify-center text-slate-800 text-2xl">
-                            <i class="fa-solid fa-gear"></i>
-                        </div>
-                        <span class="text-white text-xs mt-1 drop-shadow font-medium">설정</span>
-                    </div>
-
-                    <!-- 9. Camera (Disabled) -->
-                    <div class="ios-app-icon flex flex-col items-center opacity-70">
-                        <div class="w-14 h-14 bg-slate-300 rounded-2xl shadow-md flex items-center justify-center text-slate-700 text-2xl">
-                            <i class="fa-solid fa-camera"></i>
-                        </div>
-                        <span class="text-white text-xs mt-1 drop-shadow font-medium">카메라</span>
-                    </div>
-
-                    <!-- 10. Clock (Disabled) -->
-                    <div class="ios-app-icon flex flex-col items-center opacity-70">
-                        <div class="w-14 h-14 bg-black rounded-2xl shadow-md flex items-center justify-center text-white text-2xl border border-slate-700">
-                            <i class="fa-solid fa-clock"></i>
-                        </div>
-                        <span class="text-white text-xs mt-1 drop-shadow font-medium">시계</span>
-                    </div>
-
-                </div>
-
-                <!-- iOS Dock Container -->
-                <div class="ios-glass rounded-3xl p-3 grid grid-cols-4 gap-4 mb-2">
-                    <div onclick="openApp('phone')" class="ios-app-icon w-14 h-14 bg-green-500 rounded-2xl shadow-md flex items-center justify-center text-white text-2xl mx-auto cursor-pointer">
-                        <i class="fa-solid fa-phone"></i>
-                    </div>
-                    <div onclick="openApp('messages')" class="ios-app-icon w-14 h-14 bg-green-500 rounded-2xl shadow-md flex items-center justify-center text-white text-2xl mx-auto cursor-pointer">
-                        <i class="fa-solid fa-comment"></i>
-                    </div>
-                    <div onclick="openApp('kakaotalk')" class="ios-app-icon w-14 h-14 bg-[#FEE500] rounded-2xl shadow-md flex items-center justify-center text-[#371D1E] text-2xl font-bold mx-auto cursor-pointer">
-                        💬
-                    </div>
-                    <div onclick="openApp('photos')" class="ios-app-icon w-14 h-14 bg-white rounded-2xl p-2 shadow-md flex items-center justify-center mx-auto cursor-pointer">
-                        <div class="grid grid-cols-2 gap-0.5 w-full h-full rounded-lg overflow-hidden">
-                            <div class="bg-red-400"></div><div class="bg-yellow-400"></div>
-                            <div class="bg-green-400"></div><div class="bg-blue-400"></div>
-                        </div>
-                    </div>
-                </div>
+        <!-- APP CONTAINER -->
+        <div id="app-view" class="absolute inset-0 bg-black z-30 hidden flex flex-col pt-12">
+            <div class="flex-1 overflow-y-auto no-scrollbar" id="app-content"></div>
+            <!-- Bottom Navigation / Home Indicator -->
+            <div class="h-8 bg-black/90 flex items-center justify-center">
+                <div onclick="goHome()" class="w-32 h-1 bg-white/80 rounded-full cursor-pointer"></div>
             </div>
+        </div>
 
-            <!-- ========================================== -->
-            <!-- APP CONTAINERS (LAYER ON TOP OF HOME)      -->
-            <!-- ========================================== -->
+    </div>
 
-            <!-- 1. PHOTOS APP -->
-            <div id="app-photos" class="app-screen absolute inset-0 bg-white z-40 hidden flex flex-col pt-12">
-                <div class="flex justify-between items-center px-4 py-2 border-b border-slate-200">
-                    <button onclick="closeApp()" class="text-blue-500 text-sm font-medium flex items-center gap-1"><i class="fa-solid fa-chevron-left"></i> 홈</button>
-                    <span class="font-bold text-base">사진</span>
-                    <span class="text-sm text-blue-500 font-medium">선택</span>
-                </div>
-                <div class="flex-1 overflow-y-auto p-1">
-                    <div class="text-xs font-semibold text-slate-500 my-2 px-2">보관함</div>
-                    <div id="photos-grid" class="grid grid-cols-3 gap-1"></div>
-                </div>
-                <!-- Photos Fullscreen Modal -->
-                <div id="photo-modal" class="hidden absolute inset-0 bg-black z-50 flex flex-col justify-between pt-10 pb-6">
-                    <div class="flex justify-between px-4 text-white">
-                        <button onclick="closePhotoModal()" class="text-blue-400 text-sm font-medium"><i class="fa-solid fa-chevron-left"></i> 뒤로</button>
-                        <span id="photo-modal-index" class="text-xs opacity-70">1 / 6</span>
-                        <div></div>
-                    </div>
-                    <div class="flex-1 flex items-center justify-center relative overflow-hidden">
-                        <img id="photo-modal-img" class="max-h-full max-w-full object-contain transition-transform duration-200" src="" alt="Full View">
-                    </div>
-                    <div class="flex justify-between px-10 text-white text-xl">
-                        <button onclick="prevPhoto()"><i class="fa-solid fa-chevron-left"></i></button>
-                        <button onclick="zoomPhoto()"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-                        <button onclick="nextPhoto()"><i class="fa-solid fa-chevron-right"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. PHONE APP -->
-            <div id="app-phone" class="app-screen absolute inset-0 bg-white z-40 hidden flex flex-col pt-11">
-                <!-- Phone Screen 1: Recents List -->
-                <div id="phone-view-recents" class="flex-1 flex flex-col">
-                    <div class="px-4 py-2 flex justify-between items-center border-b border-slate-100">
-                        <span class="text-blue-500 text-sm">편집</span>
-                        <div class="flex gap-2 bg-slate-100 p-0.5 rounded-lg text-xs font-medium">
-                            <span class="bg-white px-3 py-1 rounded-md shadow-sm">전체</span>
-                            <span class="px-3 py-1 text-slate-500">부재중</span>
-                        </div>
-                        <div></div>
-                    </div>
-                    <h1 class="text-2xl font-bold px-4 py-2">최근 통화</h1>
-                    <div id="recents-list" class="flex-1 overflow-y-auto divide-y divide-slate-100">
-                        <!-- Recents list populated via JavaScript -->
-                    </div>
-                </div>
-
-                <!-- Phone Screen 2: Yuma Contact Detail -->
-                <div id="phone-view-contact" class="hidden flex-1 flex flex-col bg-slate-50">
-                    <div class="p-4 flex justify-between items-center bg-white border-b border-slate-200">
-                        <button onclick="showPhoneRecents()" class="text-blue-500 text-sm flex items-center gap-1"><i class="fa-solid fa-chevron-left"></i> 최근 통화</button>
-                        <span class="text-blue-500 text-sm font-medium">편집</span>
-                    </div>
-                    <div class="flex-1 overflow-y-auto p-4 flex flex-col items-center">
-                        <img id="contact-img" src="" class="w-24 h-24 rounded-full object-cover shadow-md mb-2 border-2 border-white">
-                        <h2 class="text-xl font-bold text-slate-900">ユウマ🐱🖤</h2>
-                        
-                        <!-- Quick Action Buttons -->
-                        <div class="grid grid-cols-4 gap-3 w-full my-6">
-                            <button onclick="openMessageWithYuma()" class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center text-blue-500 active:bg-slate-100">
-                                <i class="fa-solid fa-comment text-lg mb-1"></i>
-                                <span class="text-[10px] text-slate-600">메시지</span>
-                            </button>
-                            <button onclick="startCallYuma()" class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center text-blue-500 active:bg-slate-100">
-                                <i class="fa-solid fa-phone text-lg mb-1"></i>
-                                <span class="text-[10px] text-slate-600">음성 통화</span>
-                            </button>
-                            <button class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center text-slate-300">
-                                <i class="fa-solid fa-video text-lg mb-1"></i>
-                                <span class="text-[10px] text-slate-400">FaceTime</span>
-                            </button>
-                            <button class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center text-slate-300">
-                                <i class="fa-solid fa-envelope text-lg mb-1"></i>
-                                <span class="text-[10px] text-slate-400">Mail</span>
-                            </button>
-                        </div>
-
-                        <div class="w-full bg-white rounded-xl p-4 shadow-sm border border-slate-200 mb-4">
-                            <div class="text-xs text-slate-400 mb-1">휴대폰</div>
-                            <div class="text-blue-500 font-medium text-sm">010-XXXX-0207</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Phone Bottom Tab Bar (Static as per prompt) -->
-                <div class="h-12 border-t border-slate-200 flex justify-around items-center bg-slate-50 text-slate-400 text-[10px]">
-                    <div class="flex flex-col items-center"><i class="fa-solid fa-star text-sm mb-0.5"></i>즐겨찾기</div>
-                    <div class="flex flex-col items-center text-blue-500"><i class="fa-solid fa-clock text-sm mb-0.5"></i>최근 통화</div>
-                    <div class="flex flex-col items-center"><i class="fa-solid fa-user text-sm mb-0.5"></i>연락처</div>
-                    <div class="flex flex-col items-center"><i class="fa-solid fa-grip text-sm mb-0.5"></i>키패드</div>
-                    <div class="flex flex-col items-center"><i class="fa-solid fa-voicemail text-sm mb-0.5"></i>음성 사서함</div>
-                </div>
-
-                <!-- Simulated Outgoing Call Modal Screen -->
-                <div id="call-screen" class="hidden absolute inset-0 bg-slate-900 z-50 flex flex-col justify-between p-8 text-white pt-16">
-                    <div class="flex flex-col items-center mt-6">
-                        <img id="call-profile-img" src="" class="w-28 h-28 rounded-full border-2 border-white/20 mb-4 object-cover shadow-2xl">
-                        <h2 class="text-2xl font-bold">ユウマ🐱🖤</h2>
-                        <span id="call-status-text" class="text-sm opacity-70 mt-1">통화 연결 중...</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-6 mb-8 text-center text-xs opacity-70">
-                        <div class="flex flex-col items-center gap-2"><div class="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-xl"><i class="fa-solid fa-microphone-slash"></i></div>음소거</div>
-                        <div class="flex flex-col items-center gap-2"><div class="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-xl"><i class="fa-solid fa-grip"></i></div>키패드</div>
-                        <div class="flex flex-col items-center gap-2"><div class="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-xl"><i class="fa-solid fa-volume-high"></i></div>스피커</div>
-                    </div>
-                    <div class="flex justify-center mb-8">
-                        <button onclick="endCallEarly()" class="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center text-2xl text-white shadow-lg"><i class="fa-solid fa-phone-slash"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. MESSAGES APP -->
-            <div id="app-messages" class="app-screen absolute inset-0 bg-white z-40 hidden flex flex-col pt-11">
-                <!-- Messages Screen 1: Chat List View -->
-                <div id="msg-view-list" class="flex-1 flex flex-col">
-                    <div class="p-4 border-b border-slate-100 flex justify-between items-center">
-                        <span class="text-blue-500 font-medium text-sm">편집</span>
-                        <h1 class="font-bold text-base">메시지</h1>
-                        <i class="fa-regular fa-pen-to-square text-blue-500 text-lg"></i>
-                    </div>
-                    <div class="p-2">
-                        <div class="bg-slate-100 rounded-lg p-2 flex items-center gap-2 text-slate-400 text-xs">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <span>검색</span>
-                        </div>
-                    </div>
-                    <div id="msg-threads-list" class="flex-1 overflow-y-auto divide-y divide-slate-100">
-                        <!-- Message threads generated by JS -->
-                    </div>
-                </div>
-
-                <!-- Messages Screen 2: Active Chat Room -->
-                <div id="msg-view-room" class="hidden flex-1 flex flex-col bg-white">
-                    <div class="px-4 py-2 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 backdrop-blur-md">
-                        <button onclick="showMsgList()" class="text-blue-500 text-sm flex items-center gap-1"><i class="fa-solid fa-chevron-left"></i></button>
-                        <div class="flex flex-col items-center">
-                            <img id="msg-header-img" class="w-8 h-8 rounded-full object-cover">
-                            <span id="msg-header-title" class="font-bold text-xs mt-0.5"></span>
-                        </div>
-                        <i class="fa-solid fa-video text-blue-500 text-sm"></i>
-                    </div>
-                    <!-- Message Bubbles Scroll Area -->
-                    <div id="msg-bubbles-container" class="flex-1 overflow-y-auto p-4 flex flex-col gap-2 bg-slate-50">
-                        <!-- Chat bubbles appended here -->
-                    </div>
-                    <!-- Message Input Box -->
-                    <div class="p-2 border-t border-slate-200 bg-white flex items-center gap-2">
-                        <i class="fa-solid fa-circle-plus text-slate-400 text-xl"></i>
-                        <input id="msg-input" type="text" placeholder="메시지 보내기… 예: 나 지금 일어났어ㅠㅠ…" class="flex-1 bg-slate-100 border border-slate-300 rounded-full px-4 py-1.5 text-xs focus:outline-none focus:border-blue-500">
-                        <button onclick="sendUserMessage()" class="w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-up"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. KAKAOTALK APP -->
-            <div id="app-kakaotalk" class="app-screen absolute inset-0 bg-white z-40 hidden flex flex-col pt-11">
-                <!-- Kakao View 1: Friends Tab -->
-                <div id="kakao-view-friends" class="flex-1 flex flex-col">
-                    <div class="p-4 flex justify-between items-center text-slate-800">
-                        <h1 class="text-xl font-bold">친구</h1>
-                        <div class="flex gap-4 text-base"><i class="fa-solid fa-magnifying-glass"></i><i class="fa-solid fa-user-plus"></i><i class="fa-solid fa-gear"></i></div>
-                    </div>
-                    <div id="kakao-friends-list" class="flex-1 overflow-y-auto divide-y divide-slate-100 p-2">
-                        <!-- Friends rendered here -->
-                    </div>
-                </div>
-
-                <!-- Kakao View 2: Chats List Tab -->
-                <div id="kakao-view-chats" class="hidden flex-1 flex flex-col">
-                    <div class="p-4 flex justify-between items-center text-slate-800">
-                        <h1 class="text-xl font-bold">채팅</h1>
-                        <div class="flex gap-4 text-base"><i class="fa-solid fa-magnifying-glass"></i><i class="fa-solid fa-comment-medical"></i><i class="fa-solid fa-gear"></i></div>
-                    </div>
-                    <div id="kakao-chats-list" class="flex-1 overflow-y-auto divide-y divide-slate-100 p-2">
-                        <!-- Chats list rendered here -->
-                    </div>
-                </div>
-
-                <!-- Kakao View 3: Chatroom (Light Yellow BG) -->
-                <div id="kakao-view-room" class="hidden flex-1 flex flex-col bg-[#BACEE0]">
-                    <div class="p-3 bg-[#BACEE0] flex justify-between items-center border-b border-black/5 text-slate-800">
-                        <button onclick="showKakaoTab('chats')" class="text-base"><i class="fa-solid fa-chevron-left"></i></button>
-                        <span id="kakao-room-title" class="font-bold text-sm">🐱</span>
-                        <div class="flex gap-3 text-sm"><i class="fa-solid fa-magnifying-glass"></i><i class="fa-solid fa-bars"></i></div>
-                    </div>
-                    <div id="kakao-bubbles-container" class="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
-                        <!-- Kakao bubbles rendered here -->
-                    </div>
-                    <!-- Input bar -->
-                    <div class="p-2 bg-white flex items-center gap-2 border-t border-slate-200">
-                        <i class="fa-solid fa-plus text-slate-400 text-lg"></i>
-                        <input id="kakao-input" type="text" placeholder="메시지 보내기… 예: 나 지금 일어났어ㅠㅠ…" class="flex-1 bg-slate-100 rounded-full px-4 py-1.5 text-xs border border-slate-200 focus:outline-none">
-                        <button onclick="sendKakaoUserMessage()" class="w-8 h-7 bg-[#FEE500] text-[#371D1E] font-bold rounded-lg text-xs flex items-center justify-center">전송</button>
-                    </div>
-                </div>
-
-                <!-- Kakao Bottom Navigation Bar -->
-                <div id="kakao-nav-bar" class="h-12 border-t border-slate-200 flex justify-around items-center bg-slate-50 text-slate-600 text-lg">
-                    <button onclick="showKakaoTab('friends')" class="flex flex-col items-center"><i class="fa-solid fa-user"></i></button>
-                    <button onclick="showKakaoTab('chats')" class="flex flex-col items-center relative">
-                        <i class="fa-solid fa-comment"></i>
-                        <span id="kakao-tab-badge" class="hidden absolute -top-1 -right-2 bg-red-500 text-white text-[9px] font-bold px-1 rounded-full">!</span>
-                    </button>
-                    <button class="flex flex-col items-center opacity-40"><i class="fa-solid fa-[#]"></i></button>
-                    <button class="flex flex-col items-center opacity-40"><i class="fa-solid fa-ellipsis"></i></button>
-                </div>
-            </div>
-
-            <!-- 5. CALENDAR APP -->
-            <div id="app-calendar" class="app-screen absolute inset-0 bg-white z-40 hidden flex flex-col pt-11">
-                <div class="p-4 border-b border-slate-200 flex justify-between items-center text-red-500 font-medium text-sm">
-                    <button onclick="closeApp()" class="flex items-center gap-1"><i class="fa-solid fa-chevron-left"></i> 홈</button>
-                    <div class="flex gap-3 text-slate-700 font-bold text-base">
-                        <button onclick="changeCalMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
-                        <span id="cal-month-title">2027년 2월</span>
-                        <button onclick="changeCalMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
-                    </div>
-                    <i class="fa-solid fa-plus text-red-500"></i>
-                </div>
-                <!-- Calendar Grid -->
-                <div class="p-4 flex-1 overflow-y-auto">
-                    <div class="grid grid-cols-7 gap-1 text-center text-xs font-semibold text-slate-400 mb-2">
-                        <span class="text-red-500">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="text-blue-500">토</span>
-                    </div>
-                    <div id="cal-days-grid" class="grid grid-cols-7 gap-1 text-center text-sm font-medium"></div>
-                    <!-- Schedule Detail Box -->
-                    <div class="mt-6 border-t border-slate-100 pt-4">
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">선택한 날짜 일정</h3>
-                        <div id="cal-schedule-box" class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600">
-                            일정이 없습니다.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 6. APPLE MUSIC APP -->
-            <div id="app-applemusic" class="app-screen absolute inset-0 bg-white z-40 hidden flex flex-col pt-11">
-                <!-- Apple Music Tab 1: Library/Playlist Details -->
-                <div id="am-view-library" class="flex-1 flex flex-col overflow-y-auto p-4">
-                    <button onclick="closeApp()" class="text-rose-500 text-sm font-medium mb-2 flex items-center gap-1"><i class="fa-solid fa-chevron-left"></i> 홈</button>
-                    <!-- Playlist Banner -->
-                    <div class="flex gap-4 items-center my-4">
-                        <img id="am-cover-img" src="" class="w-28 h-28 rounded-xl shadow-lg object-cover">
-                        <div class="flex flex-col">
-                            <h2 class="text-2xl font-bold">🖤</h2>
-                            <span class="text-xs text-slate-400 font-medium">플레이리스트</span>
-                            <!-- Gray Creator text specified as empty text -->
-                            <span class="text-xs text-slate-300 mt-1">&nbsp;</span>
-                        </div>
-                    </div>
-                    <!-- Track List -->
-                    <div class="divide-y divide-slate-100 my-2">
-                        <div onclick="openAppleMusicTrack('https://music.apple.com/kr/song/1614613530')" class="py-3 flex justify-between items-center cursor-pointer active:bg-slate-50 px-2 rounded-lg">
-                            <div class="flex flex-col">
-                                <span class="text-sm font-semibold text-slate-900">언제든 어디라도</span>
-                                <span class="text-xs text-slate-500">죠지</span>
-                            </div>
-                            <i class="fa-solid fa-ellipsis text-slate-400"></i>
-                        </div>
-                        <div onclick="openAppleMusicTrack('https://music.apple.com/kr/song/1529123456')" class="py-3 flex justify-between items-center cursor-pointer active:bg-slate-50 px-2 rounded-lg">
-                            <div class="flex flex-col">
-                                <span class="text-sm font-semibold text-slate-900">좋아해..</span>
-                                <span class="text-xs text-slate-500">죠지</span>
-                            </div>
-                            <i class="fa-solid fa-ellipsis text-slate-400"></i>
-                        </div>
-                        <div onclick="openAppleMusicTrack('https://music.apple.com/kr/song/1567123456')" class="py-3 flex justify-between items-center cursor-pointer active:bg-slate-50 px-2 rounded-lg">
-                            <div class="flex flex-col">
-                                <span class="text-sm font-semibold text-slate-900">Kiss Me Right</span>
-                                <span class="text-xs text-slate-500">keshi</span>
-                            </div>
-                            <i class="fa-solid fa-ellipsis text-slate-400"></i>
-                        </div>
-                        <div onclick="openAppleMusicTrack('https://music.apple.com/kr/song/1183123456')" class="py-3 flex justify-between items-center cursor-pointer active:bg-slate-50 px-2 rounded-lg">
-                            <div class="flex flex-col">
-                                <span class="text-sm font-semibold text-slate-900">What 2 Do</span>
-                                <span class="text-xs text-slate-500">DEAN</span>
-                            </div>
-                            <i class="fa-solid fa-ellipsis text-slate-400"></i>
-                        </div>
-                        <div onclick="openAppleMusicTrack('https://music.apple.com/kr/song/1440123456')" class="py-3 flex justify-between items-center cursor-pointer active:bg-slate-50 px-2 rounded-lg">
-                            <div class="flex flex-col">
-                                <span class="text-sm font-semibold text-slate-900">Heroine</span>
-                                <span class="text-xs text-slate-500">back number</span>
-                            </div>
-                            <i class="fa-solid fa-ellipsis text-slate-400"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Apple Music Bottom Tab Bar -->
-                <div class="h-12 border-t border-slate-200 flex justify-around items-center bg-slate-50 text-slate-400 text-[10px]">
-                    <div class="flex flex-col items-center opacity-50"><i class="fa-solid fa-house text-sm mb-0.5"></i>홈</div>
-                    <div class="flex flex-col items-center opacity-50"><i class="fa-solid fa-grid-2 text-sm mb-0.5"></i>새로운 음악</div>
-                    <div class="flex flex-col items-center opacity-50"><i class="fa-solid fa-broadcast-tower text-sm mb-0.5"></i>라디오</div>
-                    <div class="flex flex-col items-center text-rose-500 font-bold"><i class="fa-solid fa-layer-group text-sm mb-0.5"></i>보관함</div>
-                    <div class="flex flex-col items-center opacity-50"><i class="fa-solid fa-magnifying-glass text-sm mb-0.5"></i>검색</div>
-                </div>
-            </div>
-
-            <!-- 7. INSTAGRAM APP -->
-            <div id="app-instagram" class="app-screen absolute inset-0 bg-white z-40 hidden flex flex-col pt-11">
-                <!-- Instagram Top Header -->
-                <div class="p-3 border-b border-slate-100 flex justify-between items-center">
-                    <button onclick="closeApp()" class="text-slate-700 text-xs font-medium"><i class="fa-solid fa-chevron-left"></i> 홈</button>
-                    <span class="font-bold tracking-tight text-lg italic">Instagram</span>
-                    <a href="https://www.instagram.com/andteam_official?mdxt=MXR2d29hYW96eDk5bA==" target="_blank" class="text-xs text-blue-500 font-semibold">&TEAM 공식</a>
-                </div>
-
-                <!-- Instagram Tab 1: Home Feed -->
-                <div id="insta-view-feed" class="flex-1 overflow-y-auto divide-y divide-slate-100">
-                    <!-- Feed Item 1 -->
-                    <div class="py-3">
-                        <div class="flex items-center px-3 mb-2 gap-2">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 to-pink-600 p-0.5">
-                                <div class="w-full h-full bg-white rounded-full flex items-center justify-center text-[10px] font-bold">&T</div>
-                            </div>
-                            <a href="https://www.instagram.com/andteam_official?mdxt=MXR2d29hYW96eDk5bA==" target="_blank" class="text-xs font-bold text-slate-800">andteam_official</a>
-                        </div>
-                        <img id="insta-feed-img-1" class="w-full h-72 object-cover" src="" alt="Official Post">
-                        <div class="p-3">
-                            <div class="flex justify-between text-lg mb-2">
-                                <div class="flex gap-3">
-                                    <button onclick="toggleLike('post1')" id="like-btn-post1"><i class="fa-regular fa-heart"></i></button>
-                                    <i class="fa-regular fa-comment"></i>
-                                    <i class="fa-regular fa-paper-plane"></i>
-                                </div>
-                                <i class="fa-regular fa-bookmark"></i>
-                            </div>
-                            <div class="text-xs font-bold mb-1" id="likes-count-post1">좋아요 1,234개</div>
-                            <div class="text-xs"><span class="font-bold mr-1">&TEAM Official</span>공식 콘텐츠</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Instagram Tab 2: Profile View -->
-                <div id="insta-view-profile" class="hidden flex-1 overflow-y-auto p-4 flex flex-col">
-                    <!-- Profile Stats -->
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="w-16 h-16 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-400 text-xs">사진 없음</div>
-                        <div class="flex gap-6 text-center">
-                            <div><div class="font-bold text-sm">2</div><div class="text-[10px] text-slate-500">게시물</div></div>
-                            <div><div class="font-bold text-sm">2</div><div class="text-[10px] text-slate-500">팔로워</div></div>
-                            <div><div class="font-bold text-sm">3</div><div class="text-[10px] text-slate-500">팔로잉</div></div>
-                        </div>
-                    </div>
-                    <!-- Profile Bio -->
-                    <div class="mb-4 text-xs">
-                        <div class="font-bold text-sm">냐냐냥</div>
-                        <div class="text-slate-400 font-medium">@nyang2777</div>
-                        <div class="mt-1 text-slate-700">어떤 냥이 키우기..</div>
-                    </div>
-                    <!-- Post Grid (2 Posts) -->
-                    <div class="grid grid-cols-2 gap-1 border-t border-slate-200 pt-2">
-                        <img id="insta-thumb-1" onclick="openInstaDetail('post1')" class="w-full h-36 object-cover cursor-pointer rounded-sm" src="">
-                        <img id="insta-thumb-2" onclick="openInstaDetail('post2')" class="w-full h-36 object-cover cursor-pointer rounded-sm" src="">
-                    </div>
-                </div>
-
-                <!-- Instagram Tab 3: Post Detail Screen -->
-                <div id="insta-view-detail" class="hidden absolute inset-0 bg-white z-50 flex flex-col pt-11">
-                    <div class="p-3 border-b border-slate-100 flex items-center gap-3">
-                        <button onclick="closeInstaDetail()" class="text-slate-700 text-sm"><i class="fa-solid fa-chevron-left"></i> 뒤로</button>
-                        <span class="font-bold text-xs">게시물</span>
-                    </div>
-                    <div class="flex-1 overflow-y-auto">
-                        <div id="insta-detail-content" class="py-2">
-                            <!-- Dynamic Post detail rendered via JS -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Instagram Bottom Navigation Bar -->
-                <div class="h-12 border-t border-slate-200 flex justify-around items-center bg-white text-slate-800 text-lg">
-                    <button onclick="showInstaTab('feed')" class="flex flex-col items-center"><i class="fa-solid fa-house"></i></button>
-                    <button class="opacity-30"><i class="fa-solid fa-magnifying-glass"></i></button>
-                    <button class="opacity-30"><i class="fa-regular fa-square-plus"></i></button>
-                    <button class="opacity-30"><i class="fa-solid fa-film"></i></button>
-                    <button onclick="showInstaTab('profile')" class="flex flex-col items-center"><i class="fa-solid fa-user"></i></button>
-                </div>
-            </div>
-
-        </div> <!-- End Screen Viewport -->
-
-        <!-- BOTTOM HOME INDICATOR (ALWAYS VISIBLE) -->
-        <div id="home-indicator" onclick="closeApp()" class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/60 rounded-full z-[60] cursor-pointer active:bg-white transition-all"></div>
-
-    </div> <!-- End Phone Container -->
-
-    <!-- APPLICATION LOGIC SCRIPT -->
+    <!-- APP JS LOGIC -->
     <script>
-        // Global App State & Persistent Storage Keys
-        const STORAGE_KEY_MSG = 'yuma_sim_messages_v1';
-        const STORAGE_KEY_KAKAO = 'yuma_sim_kakao_v1';
-        const STORAGE_KEY_LIKES = 'yuma_sim_likes_v1';
-        const STORAGE_KEY_NOTIF = 'yuma_sim_notif_v1';
+        let enteredPasscode = "";
 
-        let activeApp = null;
-        let passcodeEntered = '';
-        let currentCalDate = new Date(2027, 1, 7); // Default Feb 2027
-        let autoMsgTriggered = false;
-        let notificationTimer1 = null;
-        let notificationTimer2 = null;
-
-        // --- 1. INITIALIZATION & DATA SETUP ---
-        window.onload = function() {
-            updateClock();
-            setInterval(updateClock, 1000);
-            initImages();
-            initFirstVisitNotice();
-            initMessagesData();
-            initKakaoData();
-            initInstaLikes();
-            renderRecentsList();
-            renderPhotosGrid();
-            renderCalendar();
-            
-            // Schedule Push Notification after unlock timer setup
-            setupKakaoNotifications();
-        };
-
-        // Real-time Clock
-        function updateClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const timeStr = `${hours}:${minutes}`;
-
-            document.getElementById('status-time').innerText = timeStr;
-            document.getElementById('lock-time').innerText = timeStr;
-
-            const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-            const dateStr = `${now.getMonth() + 1}월 ${now.getDate()}일 ${days[now.getDay()]}`;
-            document.getElementById('lock-date').innerText = dateStr;
-            
-            // Update Calendar Home Icon
-            document.getElementById('home-cal-day').innerText = days[now.getDay()].replace('요일','');
-            document.getElementById('home-cal-date').innerText = now.getDate();
-        }
-
-        // Apply MEDIA_CONFIG paths safely
-        function initImages() {
-            document.getElementById('view-lockscreen').style.backgroundImage = `url('${MEDIA_CONFIG.lockscreen_bg}')`;
-            document.getElementById('view-homescreen').style.backgroundImage = `url('${MEDIA_CONFIG.homescreen_bg}')`;
-            document.getElementById('contact-img').src = MEDIA_CONFIG.yuma_profile;
-            document.getElementById('call-profile-img').src = MEDIA_CONFIG.yuma_profile;
-            document.getElementById('am-cover-img').src = MEDIA_CONFIG.applemusic_cover;
-            document.getElementById('insta-feed-img-1').src = MEDIA_CONFIG.instagram_post1;
-            document.getElementById('insta-thumb-1').src = MEDIA_CONFIG.instagram_post1;
-            document.getElementById('insta-thumb-2').src = MEDIA_CONFIG.instagram_post2;
-        }
-
-        // First Visit Banner
-        function initFirstVisitNotice() {
-            if (!localStorage.getItem('yuma_visited')) {
-                const notice = document.getElementById('first-visit-notice');
-                notice.classList.remove('hidden');
-                setTimeout(() => {
-                    notice.style.opacity = '0';
-                    setTimeout(() => notice.classList.add('hidden'), 500);
-                }, 3000);
-                localStorage.setItem('yuma_visited', 'true');
-            }
-        }
-
-        // --- 2. LOCKSCREEN & PASSCODE LOGIC ---
-        function showPasscodeUI() {
-            document.getElementById('lock-bottom-actions').classList.add('hidden');
-            document.getElementById('passcode-container').classList.remove('hidden');
-        }
-
-        function pressPasscode(num) {
-            if (passcodeEntered.length < 4) {
-                passcodeEntered += num;
-                updatePasscodeDots();
-            }
-            if (passcodeEntered.length === 4) {
-                if (passcodeEntered === '0207') {
-                    // Unlock Success
-                    setTimeout(() => {
-                        document.getElementById('view-lockscreen').classList.add('hidden');
-                        document.getElementById('view-homescreen').classList.remove('hidden');
+        function pressKey(num) {
+            if (enteredPasscode.length < 4) {
+                enteredPasscode += num;
+                updateDots();
+                if (enteredPasscode.length === 4) {
+                    if (enteredPasscode === "0207") {
+                        setTimeout(() => {
+                            document.getElementById('lock-screen').classList.add('-translate-y-full');
+                            setTimeout(() => {
+                                document.getElementById('lock-screen').classList.add('hidden');
+                                document.getElementById('home-screen').classList.remove('hidden');
+                            }, 400);
+                        }, 200);
+                    } else {
+                        alert("비밀번호가 올바르지 않습니다. (0207)");
                         clearPasscode();
-                    }, 150);
-                } else {
-                    // Wrong Password
-                    const container = document.getElementById('passcode-container');
-                    container.classList.add('shake-animation');
-                    setTimeout(() => {
-                        container.classList.remove('shake-animation');
-                        clearPasscode();
-                    }, 400);
+                    }
                 }
             }
         }
 
         function clearPasscode() {
-            passcodeEntered = '';
-            updatePasscodeDots();
-            document.getElementById('passcode-container').classList.add('hidden');
-            document.getElementById('lock-bottom-actions').classList.remove('hidden');
+            enteredPasscode = "";
+            updateDots();
         }
 
-        function updatePasscodeDots() {
-            const dots = document.querySelectorAll('#passcode-dots .dot');
-            dots.forEach((dot, idx) => {
-                if (idx < passcodeEntered.length) {
-                    dot.classList.add('bg-white');
+        function updateDots() {
+            const dots = document.getElementById('passcode-dots').children;
+            for (let i = 0; i < 4; i++) {
+                if (i < enteredPasscode.length) {
+                    dots[i].classList.add('bg-white');
                 } else {
-                    dot.classList.remove('bg-white');
+                    dots[i].classList.remove('bg-white');
                 }
-            });
+            }
         }
 
-        // --- 3. APP NAVIGATION & BADGES ---
+        function goHome() {
+            document.getElementById('app-view').classList.add('hidden');
+            document.getElementById('home-screen').classList.remove('hidden');
+        }
+
         function openApp(appName) {
-            activeApp = appName;
-            document.querySelectorAll('.app-screen').forEach(el => el.classList.add('hidden'));
-            const appEl = document.getElementById(`app-${appName}`);
-            if (appEl) appEl.classList.remove('hidden');
+            const appView = document.getElementById('app-view');
+            const appContent = document.getElementById('app-content');
+            appView.classList.remove('hidden');
 
-            if (appName === 'messages') renderMessagesApp();
-            if (appName === 'kakaotalk') renderKakaoApp();
-        }
-
-        function closeApp() {
-            activeApp = null;
-            document.querySelectorAll('.app-screen').forEach(el => el.classList.add('hidden'));
-            // Close modals
-            document.getElementById('photo-modal').classList.add('hidden');
-            document.getElementById('call-screen').classList.add('hidden');
-            updateBadges();
-        }
-
-        function updateBadges() {
-            // Messages Badge
-            const msgData = getStoredData(STORAGE_KEY_MSG, []);
-            const unreadMsgCount = msgData.filter(m => m.thread === 'yuma' && !m.read).length;
-            const badgeMsg = document.getElementById('badge-messages');
-            if (unreadMsgCount > 0) {
-                badgeMsg.innerText = unreadMsgCount;
-                badgeMsg.classList.remove('hidden');
-            } else {
-                badgeMsg.classList.add('hidden');
-            }
-
-            // Kakao Badge
-            const kakaoData = getStoredData(STORAGE_KEY_KAKAO, []);
-            const unreadKakaoCount = kakaoData.filter(k => k.sender !== 'me' && !k.read).length;
-            const badgeKakao = document.getElementById('badge-kakaotalk');
-            if (unreadKakaoCount > 0) {
-                badgeKakao.innerText = unreadKakaoCount;
-                badgeKakao.classList.remove('hidden');
-            } else {
-                badgeKakao.classList.add('hidden');
-            }
-        }
-
-        function getStoredData(key, defaultVal) {
-            const val = localStorage.getItem(key);
-            return val ? JSON.parse(val) : defaultVal;
-        }
-
-        function setStoredData(key, val) {
-            localStorage.setItem(key, JSON.stringify(val));
-            updateBadges();
-        }
-
-        // --- 4. MESSAGES APP LOGIC ---
-        function initMessagesData() {
-            let data = getStoredData(STORAGE_KEY_MSG, null);
-            if (!data) {
-                data = [
-                    // Yuma Existing Chat History
-                    { id: 1, thread: 'yuma', sender: 'yuma', text: '나 일본 다녀올겡~', time: '어제 14:00', read: true },
-                    { id: 2, thread: 'yuma', sender: 'me', text: '몸 조심히 다녀와~', time: '어제 14:02', read: true },
-                    { id: 3, thread: 'yuma', sender: 'me', text: '밥 잘 챙겨 먹고!', time: '어제 14:03', read: true },
-                    { id: 4, thread: 'yuma', sender: 'yuma', text: '今日は寿司🍣', time: '어제 18:20', read: true },
-                    { id: 5, thread: 'yuma', sender: 'yuma', text: '초밥 먹을거양', time: '어제 18:21', read: true },
-                    { id: 6, thread: 'yuma', sender: 'yuma', text: '@@도 맛있는 거 많이 먹엉~', time: '어제 18:22', read: true },
-                    { id: 7, thread: 'yuma', sender: 'yuma', text: '早く会いたい', time: '어제 22:10', read: true },
-                    { id: 8, thread: 'yuma', sender: 'me', text: '한국 언제와…', time: '어제 22:15', read: true },
-                    { id: 9, thread: 'yuma', sender: 'me', text: '나도 일본갈까 그냥ㅋㅋ', time: '어제 22:16', read: true },
-                    { id: 10, thread: 'yuma', sender: 'yuma', text: '나 오늘 한국 가~', time: '어제 23:00', read: true },
-                    { id: 11, thread: 'yuma', sender: 'yuma', text: '보고싶엇징', time: '어제 23:01', read: true },
-                    { id: 12, thread: 'yuma', sender: 'me', text: '보구싶다', time: '어제 23:05', read: true },
-                    { id: 13, thread: 'yuma', sender: 'yuma', text: '오늘 잠깐 볼까 그러면', time: '어제 23:06', read: true },
-                    { id: 14, thread: 'yuma', sender: 'me', text: '진짜?', time: '어제 23:07', read: true },
-                    { id: 15, thread: 'yuma', sender: 'yuma', text: 'うん', time: '어제 23:08', read: true },
-                    { id: 16, thread: 'yuma', sender: 'yuma', text: '조심히 들어강', time: '어제 23:30', read: true },
-                    { id: 17, thread: 'yuma', sender: 'yuma', text: 'だいすーーーき', time: '어제 23:31', read: true },
-                    { id: 18, thread: 'yuma', sender: 'yuma', text: '사랑해~~~~😚😚😚😚', time: '어제 23:32', read: true },
-                    
-                    // Initial 3 Unread Messages
-                    { id: 19, thread: 'yuma', sender: 'yuma', text: 'おはよん', time: '오전 08:30', read: false },
-                    { id: 20, thread: 'yuma', sender: 'yuma', text: '아침밥 먹었어?', time: '오전 08:31', read: false },
-                    { id: 21, thread: 'yuma', sender: 'yuma', text: '머해용', time: '오전 08:32', read: false },
-
-                    // Mom Thread
-                    { id: 22, thread: 'mom', sender: 'mom', text: '딸~~~ 밥은?', time: '오후 12:10', read: true },
-                    { id: 23, thread: 'mom', sender: 'me', text: '이제 먹어야지ㅜㅜ', time: '오후 12:15', read: true },
-                    { id: 24, thread: 'mom', sender: 'mom', text: 'ㅇㅋ', time: '오후 12:16', read: true },
-
-                    // Coupang Eats Thread
-                    { id: 25, thread: 'coupang', sender: 'coupang', text: '[쿠팡이츠 배달완료]\n[Web발신]\n[쿠팡이츠] 문앞으로 배달이 완료되었습니다.\n▶주문일시: 2026-10-23 21:11:40\n▶매장명: BHC', time: '10/23', read: true },
-                    { id: 26, thread: 'coupang', sender: 'coupang', text: '[쿠팡이츠 배달완료]\n[Web발신]\n[쿠팡이츠] 문앞으로 배달이 완료되었습니다.\n▶주문일시: 2026-10-20 15:30:12\n▶매장명: 카페인 중독', time: '10/20', read: true },
-                    { id: 27, thread: 'coupang', sender: 'coupang', text: '[쿠팡이츠 배달완료]\n[Web발신]\n[쿠팡이츠] 문앞으로 배달이 완료되었습니다.\n▶주문일시: 2026-10-18 19:45:00\n▶매장명: 동대문 엽기떡볶이', time: '10/18', read: true }
-                ];
-                setStoredData(STORAGE_KEY_MSG, data);
-            }
-            updateBadges();
-        }
-
-        let currentMsgThread = 'yuma';
-
-        function renderMessagesApp() {
-            showMsgList();
-        }
-
-        function showMsgList() {
-            document.getElementById('msg-view-list').classList.remove('hidden');
-            document.getElementById('msg-view-room').classList.add('hidden');
-
-            const data = getStoredData(STORAGE_KEY_MSG, []);
-            const threadsList = document.getElementById('msg-threads-list');
-            threadsList.innerHTML = '';
-
-            const threadsMeta = [
-                { id: 'yuma', name: 'ユウマ🐱🖤', img: MEDIA_CONFIG.yuma_profile },
-                { id: 'mom', name: '엄마♥', img: MEDIA_CONFIG.mom_profile },
-                { id: 'coupang', name: '쿠팡이츠', img: 'https://placehold.co/100x100/00aaff/ffffff?text=Coupang' }
-            ];
-
-            threadsMeta.forEach(meta => {
-                const threadMsgs = data.filter(m => m.thread === meta.id);
-                const lastMsg = threadMsgs[threadMsgs.length - 1];
-                const unreadCount = threadMsgs.filter(m => !m.read).length;
-
-                const item = document.createElement('div');
-                item.className = 'p-3 flex items-center gap-3 cursor-pointer active:bg-slate-50';
-                item.onclick = () => openMsgRoom(meta.id);
-
-                item.innerHTML = `
-                    <div class="relative">
-                        <img src="${meta.img}" class="w-12 h-12 rounded-full object-cover">
-                        ${unreadCount > 0 ? `<div class="absolute -top-1 -left-1 w-3.5 h-3.5 bg-blue-500 rounded-full border-2 border-white"></div>` : ''}
-                    </div>
-                    <div class="flex-1 overflow-hidden">
-                        <div class="flex justify-between items-center mb-0.5">
-                            <span class="font-bold text-sm text-slate-900">${meta.name}</span>
-                            <span class="text-xs text-slate-400">${lastMsg ? lastMsg.time : ''}</span>
-                        </div>
-                        <p class="text-xs text-slate-500 truncate">${lastMsg ? lastMsg.text.replace(/\n/g, ' ') : ''}</p>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
-                `;
-                threadsList.appendChild(item);
-            });
-        }
-
-        function openMsgRoom(threadId) {
-            currentMsgThread = threadId;
-            document.getElementById('msg-view-list').classList.add('hidden');
-            document.getElementById('msg-view-room').classList.remove('hidden');
-
-            // Set Header
-            const meta = {
-                yuma: { name: 'ユウマ🐱🖤', img: MEDIA_CONFIG.yuma_profile },
-                mom: { name: '엄마♥', img: MEDIA_CONFIG.mom_profile },
-                coupang: { name: '쿠팡이츠', img: 'https://placehold.co/100x100/00aaff/ffffff?text=Coupang' }
-            }[threadId];
-
-            document.getElementById('msg-header-title').innerText = meta.name;
-            document.getElementById('msg-header-img').src = meta.img;
-
-            // Mark as read
-            let data = getStoredData(STORAGE_KEY_MSG, []);
-            data.forEach(m => {
-                if (m.thread === threadId) m.read = true;
-            });
-            setStoredData(STORAGE_KEY_MSG, data);
-
-            renderMsgBubbles();
-        }
-
-        function renderMsgBubbles() {
-            const data = getStoredData(STORAGE_KEY_MSG, []);
-            const container = document.getElementById('msg-bubbles-container');
-            container.innerHTML = '';
-
-            const threadMsgs = data.filter(m => m.thread === currentMsgThread);
-
-            threadMsgs.forEach(m => {
-                const isMe = m.sender === 'me';
-                const wrapper = document.createElement('div');
-                wrapper.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} my-0.5`;
-
-                const bubble = document.createElement('div');
-                bubble.className = `max-w-[75%] px-3 py-2 rounded-2xl text-xs whitespace-pre-line leading-relaxed ${
-                    isMe ? 'bg-blue-500 text-white rounded-br-xs' : 'bg-slate-200 text-slate-900 rounded-bl-xs'
-                }`;
-                bubble.innerText = m.text;
-
-                wrapper.appendChild(bubble);
-                container.appendChild(wrapper);
-            });
-
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function sendUserMessage() {
-            const input = document.getElementById('msg-input');
-            const text = input.value.trim();
-            if (!text) return;
-
-            let data = getStoredData(STORAGE_KEY_MSG, []);
-            const newMsg = {
-                id: Date.now(),
-                thread: currentMsgThread,
-                sender: 'me',
-                text: text,
-                time: '방금',
-                read: true
-            };
-
-            data.push(newMsg);
-            setStoredData(STORAGE_KEY_MSG, data);
-            input.value = '';
-            renderMsgBubbles();
-
-            // Auto Response Rule: exact text "나 이제 일어남…"
-            if (currentMsgThread === 'yuma' && text === '나 이제 일어남…' && !autoMsgTriggered) {
-                autoMsgTriggered = true;
-                setTimeout(() => {
-                    let d = getStoredData(STORAGE_KEY_MSG, []);
-                    d.push({ id: Date.now(), thread: 'yuma', sender: 'yuma', text: 'ㅋㅋㅋ 잘햇엉', time: '방금', read: false });
-                    setStoredData(STORAGE_KEY_MSG, d);
-                    if (activeApp === 'messages' && currentMsgThread === 'yuma') renderMsgBubbles();
-
-                    setTimeout(() => {
-                        let d2 = getStoredData(STORAGE_KEY_MSG, []);
-                        d2.push({ id: Date.now() + 1, thread: 'yuma', sender: 'yuma', text: '잘잤어??', time: '방금', read: false });
-                        setStoredData(STORAGE_KEY_MSG, d2);
-                        if (activeApp === 'messages' && currentMsgThread === 'yuma') renderMsgBubbles();
-                    }, 2000);
-
-                }, 10000);
-            }
-        }
-
-        function openMessageWithYuma() {
-            openApp('messages');
-            openMsgRoom('yuma');
-        }
-
-        // --- 5. PHONE APP LOGIC ---
-        function renderRecentsList() {
-            const list = [
-                { name: 'ユウ마 🐱🖤', type: '발신 통화', icon: 'fa-arrow-up-right', color: 'text-slate-500', missed: false },
-                { name: '민서', type: '수신 통화', icon: 'fa-arrow-down-left', color: 'text-slate-500', missed: false },
-                { name: 'ユウマ🐱🖤', type: '수신 통화', icon: 'fa-arrow-down-left', color: 'text-slate-500', missed: false },
-                { name: 'ユウマ🐱🖤', type: '부재중 전화 (3)', icon: 'fa-phone-slash', color: 'text-red-500 font-bold', missed: true },
-                { name: '엄마♥', type: '수신 통화', icon: 'fa-arrow-down-left', color: 'text-slate-500', missed: false },
-                { name: '민서', type: '발신 통화', icon: 'fa-arrow-up-right', color: 'text-slate-500', missed: false },
-                { name: 'ユウマ🐱🖤', type: '발신 통화', icon: 'fa-arrow-up-right', color: 'text-slate-500', missed: false },
-                { name: 'ユウマ🐱🖤', type: '수신 통화', icon: 'fa-arrow-down-left', color: 'text-slate-500', missed: false },
-                { name: '아빠♥', type: '수신 통화', icon: 'fa-arrow-down-left', color: 'text-slate-500', missed: false }
-            ];
-
-            const container = document.getElementById('recents-list');
-            container.innerHTML = '';
-
-            list.forEach((item, index) => {
-                const row = document.createElement('div');
-                row.className = 'p-3 flex justify-between items-center cursor-pointer active:bg-slate-50 px-4';
-                row.onclick = () => {
-                    if (item.name.includes('ユウマ')) {
-                        showPhoneContact();
+            if (appName === 'photos') {
+                let imgs = MEDIA_CONFIG.photos_app.map(url => `<img src="${url}" class="w-full h-28 object-cover rounded-lg">`).join('');
+                appContent.innerHTML = `
+                    <div class="p-4">
+                        <h2 class="text-2xl font-bold mb-4">보관함</h2>
+                        <div class="grid grid-cols-3 gap-2">${imgs}</div>
+                    </div>`;
+            } else if (appName === 'instagram') {
+                let p2Media = MEDIA_CONFIG.instagram_post2.map(url => {
+                    if(url.endsWith('.mp4')) {
+                        return `<video src="${url}" controls class="w-full h-80 object-cover"></video>`;
                     }
-                };
+                    return `<img src="${url}" class="w-full h-80 object-cover">`;
+                }).join('');
 
-                row.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid ${item.icon} text-xs ${item.missed ? 'text-red-500' : 'text-slate-400'}"></i>
-                        <div class="flex flex-col">
-                            <span class="text-sm font-semibold ${item.missed ? 'text-red-500' : 'text-slate-900'}">${item.name}</span>
-                            <span class="text-[10px] text-slate-400">휴대폰</span>
+                appContent.innerHTML = `
+                    <div class="bg-black text-white min-h-full">
+                        <div class="p-3 border-b border-gray-800 flex justify-between items-center">
+                            <span class="font-bold text-lg">Instagram</span>
+                            <i class="fa-regular fa-heart text-xl"></i>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs text-slate-400">최근</span>
-                        <i class="fa-solid fa-circle-info text-blue-500 text-sm"></i>
-                    </div>
-                `;
-                container.appendChild(row);
-            });
-        }
-
-        function showPhoneContact() {
-            document.getElementById('phone-view-recents').classList.add('hidden');
-            document.getElementById('phone-view-contact').classList.remove('hidden');
-        }
-
-        function showPhoneRecents() {
-            document.getElementById('phone-view-contact').classList.add('hidden');
-            document.getElementById('phone-view-recents').classList.remove('hidden');
-        }
-
-        let callTimer = null;
-        function startCallYuma() {
-            document.getElementById('call-screen').classList.remove('hidden');
-            document.getElementById('call-status-text').innerText = '통화 연결 중...';
-
-            callTimer = setTimeout(() => {
-                endCallAuto();
-            }, 10000);
-        }
-
-        function endCallEarly() {
-            if (callTimer) clearTimeout(callTimer);
-            endCallAuto();
-        }
-
-        function endCallAuto() {
-            document.getElementById('call-screen').classList.add('hidden');
-            showPhoneContact();
-
-            // Append "연습 중!" message to Yuma thread (prevent duplicate if already exists)
-            let data = getStoredData(STORAGE_KEY_MSG, []);
-            const alreadyAdded = data.some(m => m.thread === 'yuma' && m.text === '연습 중!' && m.time === '방금');
-            if (!alreadyAdded) {
-                data.push({
-                    id: Date.now(),
-                    thread: 'yuma',
-                    sender: 'yuma',
-                    text: '연습 중!',
-                    time: '방금',
-                    read: false
-                });
-                setStoredData(STORAGE_KEY_MSG, data);
-            }
-        }
-
-        // --- 6. KAKAOTALK LOGIC ---
-        function initKakaoData() {
-            let data = getStoredData(STORAGE_KEY_KAKAO, null);
-            if (!data) {
-                data = [
-                    // Yuma Existing Chat History
-                    { id: 1, thread: 'yuma', sender: 'yuma', text: '(사진)', isPhoto: true, read: true },
-                    { id: 2, thread: 'yuma', sender: 'yuma', text: '나 어렷을 때ㅋㅋㅋㅋ', read: true },
-                    { id: 3, thread: 'yuma', sender: 'yuma', text: '어릴 때 사진 보여줘', read: true },
-                    { id: 4, thread: 'yuma', sender: 'me', text: 'ㅋㅋㅋㅋㅋ귀여워😭😭', read: true },
-                    { id: 5, thread: 'yuma', sender: 'me', text: '나 어릴때 사진? 엄마한테 물어보께', read: true },
-                    { id: 6, thread: 'yuma', sender: 'yuma', text: 'ㅋㅋㅋㅋㅋうん', read: true },
-                    { id: 7, thread: 'yuma', sender: 'yuma', text: '보고싶엉~ 나 연습중', read: true },
-                    { id: 8, thread: 'yuma', sender: 'yuma', text: '(사진)', isPhoto: true, read: true },
-                    { id: 9, thread: 'yuma', sender: 'me', text: '나도ㅜㅜ 유마 보고싶어', read: true },
-                    { id: 10, thread: 'yuma', sender: 'yuma', text: '연습 끝나구 잠깐 볼까?', read: true },
-                    
-                    // Continuation Response sequence (included directly in same thread seamlessly)
-                    { id: 11, thread: 'yuma', sender: 'yuma', text: '뭐가!!🤨', read: true },
-                    { id: 12, thread: 'yuma', sender: 'yuma', text: 'ㅋㅋㅋㅋㅋ 보고싶어서 보내봣엉~~', read: true },
-                    { id: 13, thread: 'yuma', sender: 'yuma', text: '한국 많이 춥지?', read: true },
-                    { id: 14, thread: 'yuma', sender: 'yuma', text: '따뜻하게 입어야돼 ㅡㅡ', read: true },
-                    { id: 15, thread: 'yuma', sender: 'me', text: '그럼용 유마도 따뜻하게 입어!!!', read: true },
-                    { id: 16, thread: 'yuma', sender: 'yuma', text: '風邪ひかないようにねん', read: true },
-                    { id: 17, thread: 'yuma', sender: 'yuma', text: '오늘도 힘내쟝', read: true },
-                    { id: 18, thread: 'yuma', sender: 'yuma', text: '사랑해', read: true },
-
-                    // Another Day Chat History
-                    { id: 19, thread: 'yuma', sender: 'yuma', text: '(사진)', isPhoto: true, read: true },
-                    { id: 20, thread: 'yuma', sender: 'yuma', text: '우리 같이 엽떡 먹엇을 때 찍은거', read: true },
-                    { id: 21, thread: 'yuma', sender: 'me', text: 'ㅋㅋㅋㅋㅋㅋ엨ㅋㅋㅋㅋㅋㅋ', read: true },
-                    { id: 22, thread: 'yuma', sender: 'me', text: '언제찍었어!!!! 나 왜 몰랏지', read: true },
-                    { id: 23, thread: 'yuma', sender: 'yuma', text: '몰래 찍었징~ 나 운동하고 올게용', read: true },
-                    { id: 24, thread: 'yuma', sender: 'me', text: '웅 팟팅', read: true },
-                    { id: 25, thread: 'yuma', sender: 'yuma', text: '사랑행', read: true },
-                    { id: 26, thread: 'yuma', sender: 'me', text: '나도얌', read: true },
-                    { id: 27, thread: 'yuma', sender: 'yuma', text: '今日はもう침대', read: true },
-                    { id: 28, thread: 'yuma', sender: 'yuma', text: '우리 못봐서 할게 없엉…', read: true },
-                    { id: 29, thread: 'yuma', sender: 'yuma', text: '나 지금 한국 갈까ㅋㅋㅋ😚', read: true },
-                    { id: 30, thread: 'yuma', sender: 'yuma', text: '자?', read: true },
-                    { id: 31, thread: 'yuma', sender: 'yuma', text: 'おやすみ', read: true },
-                    { id: 32, thread: 'yuma', sender: 'yuma', text: '今日もだいすき', read: true },
-                    { id: 33, thread: 'yuma', sender: 'yuma', text: '🌙🌙😽', read: true },
-
-                    // Minseo Thread
-                    { id: 34, thread: 'minseo', sender: 'minseo', text: '너 일본 갔니?', read: true },
-                    { id: 35, thread: 'minseo', sender: 'me', text: 'ㄴㄴ왜', read: true },
-                    { id: 36, thread: 'minseo', sender: 'minseo', text: '유마 일본아님? 너도 갔나 해서', read: true },
-                    { id: 37, thread: 'minseo', sender: 'minseo', text: '갔으면 도지마롤 있나 봐달라고 하려고했지', read: true },
-                    { id: 38, thread: 'minseo', sender: 'me', text: 'ㅋㅋㅋㅋ집이야ㅠ 유마보고싶어', read: true }
-                ];
-                setStoredData(STORAGE_KEY_KAKAO, data);
-            }
-        }
-
-        function renderKakaoApp() {
-            showKakaoTab('friends');
-        }
-
-        function showKakaoTab(tab) {
-            document.getElementById('kakao-view-friends').classList.add('hidden');
-            document.getElementById('kakao-view-chats').classList.add('hidden');
-            document.getElementById('kakao-view-room').classList.add('hidden');
-
-            if (tab === 'friends') {
-                document.getElementById('kakao-view-friends').classList.remove('hidden');
-                renderKakaoFriends();
-            } else if (tab === 'chats') {
-                document.getElementById('kakao-view-chats').classList.remove('hidden');
-                renderKakaoChats();
-            }
-        }
-
-        function renderKakaoFriends() {
-            const friends = [
-                { name: '나', sub: '프로필 관리' },
-                { name: '민서', sub: '' },
-                { name: '🐱', sub: '유마' },
-                { name: '엄마♥', sub: '' },
-                { name: '아빠♥', sub: '' },
-                { name: '동생', sub: '' }
-            ];
-
-            const container = document.getElementById('kakao-friends-list');
-            container.innerHTML = '';
-
-            friends.forEach(f => {
-                const div = document.createElement('div');
-                div.className = 'py-3 flex items-center gap-3 cursor-pointer';
-                div.onclick = () => {
-                    if (f.name === '🐱') openKakaoRoom('yuma');
-                    if (f.name === '민서') openKakaoRoom('minseo');
-                };
-
-                // Yuma (🐱) specifically has no profile photo as required
-                let profileIcon = `<div class="w-10 h-10 rounded-2xl bg-slate-200 flex items-center justify-center font-bold text-slate-500 text-sm">${f.name[0]}</div>`;
-                if (f.name === '🐱') {
-                    profileIcon = `<div class="w-10 h-10 rounded-2xl bg-slate-200 flex items-center justify-center font-bold text-slate-600 text-base">🐱</div>`;
-                }
-
-                div.innerHTML = `
-                    ${profileIcon}
-                    <div class="flex flex-col">
-                        <span class="font-semibold text-sm text-slate-900">${f.name}</span>
-                        ${f.sub ? `<span class="text-[10px] text-slate-400">${f.sub}</span>` : ''}
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function renderKakaoChats() {
-            const container = document.getElementById('kakao-chats-list');
-            container.innerHTML = '';
-
-            // Fixed Top Items
-            // 1. 🐱 Chat
-            const data = getStoredData(STORAGE_KEY_KAKAO, []);
-            const yumaMsgs = data.filter(k => k.thread === 'yuma');
-            const lastYuma = yumaMsgs[yumaMsgs.length - 1];
-
-            const itemYuma = document.createElement('div');
-            itemYuma.className = 'py-3 flex items-center gap-3 cursor-pointer border-b border-slate-100';
-            itemYuma.onclick = () => openKakaoRoom('yuma');
-            itemYuma.innerHTML = `
-                <div class="w-11 h-11 rounded-2xl bg-slate-200 flex items-center justify-center font-bold text-base">🐱</div>
-                <div class="flex-1 overflow-hidden">
-                    <div class="flex justify-between items-center"><span class="font-bold text-sm">🐱</span><span class="text-[10px] text-slate-400">방금</span></div>
-                    <p class="text-xs text-slate-500 truncate">${lastYuma ? (lastYuma.isPhoto ? '(사진)' : lastYuma.text) : ''}</p>
-                </div>
-            `;
-            container.appendChild(itemYuma);
-
-            // 2. 나와의 채팅 (Me)
-            const itemMe = document.createElement('div');
-            itemMe.className = 'py-3 flex items-center gap-3 cursor-pointer border-b border-slate-100';
-            itemMe.innerHTML = `
-                <div class="w-11 h-11 rounded-2xl bg-yellow-300 flex items-center justify-center font-bold text-sm">나</div>
-                <div class="flex-1 overflow-hidden">
-                    <div class="flex justify-between items-center"><span class="font-bold text-sm">나와의 채팅</span><span class="text-[10px] text-slate-400">상단고정</span></div>
-                    <p class="text-xs text-slate-500 truncate">레포트 제출 ~11/1</p>
-                </div>
-            `;
-            container.appendChild(itemMe);
-        }
-
-        let currentKakaoThread = 'yuma';
-        function openKakaoRoom(threadId) {
-            currentKakaoThread = threadId;
-            document.getElementById('kakao-view-friends').classList.add('hidden');
-            document.getElementById('kakao-view-chats').classList.add('hidden');
-            document.getElementById('kakao-view-room').classList.remove('hidden');
-
-            document.getElementById('kakao-room-title').innerText = threadId === 'yuma' ? '🐱' : '민서';
-
-            // Mark read
-            let data = getStoredData(STORAGE_KEY_KAKAO, []);
-            data.forEach(k => {
-                if (k.thread === threadId) k.read = true;
-            });
-            setStoredData(STORAGE_KEY_KAKAO, data);
-
-            renderKakaoBubbles();
-        }
-
-        function renderKakaoBubbles() {
-            const data = getStoredData(STORAGE_KEY_KAKAO, []);
-            const container = document.getElementById('kakao-bubbles-container');
-            container.innerHTML = '';
-
-            const threadMsgs = data.filter(k => k.thread === currentKakaoThread);
-            let photoIndex = 0;
-
-            threadMsgs.forEach(m => {
-                const isMe = m.sender === 'me';
-                const row = document.createElement('div');
-                row.className = `flex ${isMe ? 'justify-end' : 'justify-start'} items-end gap-1.5 my-1`;
-
-                let contentHtml = '';
-                if (m.isPhoto) {
-                    const photoUrl = MEDIA_CONFIG.kakaotalk_photos[photoIndex % MEDIA_CONFIG.kakaotalk_photos.length];
-                    photoIndex++;
-                    contentHtml = `<img src="${photoUrl}" class="w-36 h-36 object-cover rounded-xl shadow-sm border border-black/5">`;
-                } else {
-                    contentHtml = `<div class="${isMe ? 'bg-[#FEE500] text-[#371D1E]' : 'bg-white text-slate-900'} px-3 py-2 rounded-xl text-xs max-w-[200px] shadow-sm leading-relaxed">${m.text}</div>`;
-                }
-
-                row.innerHTML = `
-                    ${!isMe ? `<div class="w-8 h-8 rounded-xl bg-slate-200 flex items-center justify-center text-xs font-bold self-start">🐱</div>` : ''}
-                    <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
-                        ${!isMe ? `<span class="text-[10px] text-slate-600 mb-0.5">🐱</span>` : ''}
-                        ${contentHtml}
-                    </div>
-                `;
-                container.appendChild(row);
-            });
-
-            container.scrollTop = container.scrollHeight;
-        }
-
-        function sendKakaoUserMessage() {
-            const input = document.getElementById('kakao-input');
-            const text = input.value.trim();
-            if (!text) return;
-
-            let data = getStoredData(STORAGE_KEY_KAKAO, []);
-            data.push({
-                id: Date.now(),
-                thread: currentKakaoThread,
-                sender: 'me',
-                text: text,
-                read: true
-            });
-            setStoredData(STORAGE_KEY_KAKAO, data);
-            input.value = '';
-            renderKakaoBubbles();
-        }
-
-        // Automatic Timed Push Notification System (10s and 20s after site load/unlock)
-        function setupKakaoNotifications() {
-            if (localStorage.getItem(STORAGE_KEY_NOTIF)) return; // Only once per session
-
-            notificationTimer1 = setTimeout(() => {
-                if (activeApp !== 'kakaotalk') {
-                    showNotificationBanner('🐱', '문자 봣엉??');
-                }
-            }, 10000);
-
-            notificationTimer2 = setTimeout(() => {
-                if (activeApp !== 'kakaotalk') {
-                    showNotificationBanner('🐱', 'メッセージ!!!🤨');
-                }
-                localStorage.setItem(STORAGE_KEY_NOTIF, 'done');
-            }, 20000);
-        }
-
-        function showNotificationBanner(sender, message) {
-            const container = document.getElementById('notification-container');
-            const banner = document.createElement('div');
-            banner.className = 'ios-glass-dark text-white p-3 rounded-2xl shadow-2xl flex items-center gap-3 cursor-pointer banner-enter border border-white/10';
-            banner.onclick = () => {
-                openApp('kakaotalk');
-                openKakaoRoom('yuma');
-                banner.remove();
-            };
-
-            banner.innerHTML = `
-                <div class="w-10 h-10 rounded-xl bg-[#FEE500] text-[#371D1E] font-bold flex items-center justify-center text-lg">💬</div>
-                <div class="flex-1 overflow-hidden">
-                    <div class="flex justify-between items-center"><span class="font-bold text-xs">카카오톡 · ${sender}</span><span class="text-[9px] opacity-60">지금</span></div>
-                    <p class="text-xs font-medium truncate mt-0.5">${message}</p>
-                </div>
-            `;
-
-            container.appendChild(banner);
-            setTimeout(() => {
-                banner.classList.remove('banner-enter');
-                banner.classList.add('banner-exit');
-                setTimeout(() => banner.remove(), 400);
-            }, 4000);
-        }
-
-        // --- 7. PHOTOS APP LOGIC ---
-        let currentPhotoIdx = 0;
-        let isZoomed = false;
-
-        function renderPhotosGrid() {
-            const grid = document.getElementById('photos-grid');
-            grid.innerHTML = '';
-
-            MEDIA_CONFIG.photos_app.forEach((url, idx) => {
-                const img = document.createElement('img');
-                img.src = url;
-                img.className = 'w-full h-24 object-cover cursor-pointer active:opacity-80';
-                img.onclick = () => openPhotoModal(idx);
-                grid.appendChild(img);
-            });
-        }
-
-        function openPhotoModal(idx) {
-            currentPhotoIdx = idx;
-            isZoomed = false;
-            const modal = document.getElementById('photo-modal');
-            const img = document.getElementById('photo-modal-img');
-            img.style.transform = 'scale(1)';
-            img.src = MEDIA_CONFIG.photos_app[currentPhotoIdx];
-            document.getElementById('photo-modal-index').innerText = `${currentPhotoIdx + 1} / ${MEDIA_CONFIG.photos_app.length}`;
-            modal.classList.remove('hidden');
-        }
-
-        function closePhotoModal() {
-            document.getElementById('photo-modal').classList.add('hidden');
-        }
-
-        function prevPhoto() {
-            if (currentPhotoIdx > 0) openPhotoModal(currentPhotoIdx - 1);
-        }
-
-        function nextPhoto() {
-            if (currentPhotoIdx < MEDIA_CONFIG.photos_app.length - 1) openPhotoModal(currentPhotoIdx + 1);
-        }
-
-        function zoomPhoto() {
-            const img = document.getElementById('photo-modal-img');
-            isZoomed = !isZoomed;
-            img.style.transform = isZoomed ? 'scale(1.8)' : 'scale(1)';
-        }
-
-        // --- 8. CALENDAR APP LOGIC ---
-        function changeCalMonth(delta) {
-            currentCalDate.setMonth(currentCalDate.getMonth() + delta);
-            renderCalendar();
-        }
-
-        function renderCalendar() {
-            const year = currentCalDate.getFullYear();
-            const month = currentCalDate.getMonth();
-            document.getElementById('cal-month-title').innerText = `${year}년 ${month + 1}월`;
-
-            const firstDay = new Date(year, month, 1).getDay();
-            const lastDate = new Date(year, month + 1, 0).getDate();
-
-            const grid = document.getElementById('cal-days-grid');
-            grid.innerHTML = '';
-
-            for (let i = 0; i < firstDay; i++) {
-                grid.appendChild(document.createElement('div'));
-            }
-
-            for (let d = 1; d <= lastDate; d++) {
-                const btn = document.createElement('button');
-                btn.className = 'h-9 w-9 rounded-full flex flex-col items-center justify-center mx-auto hover:bg-slate-100 relative';
-                btn.innerText = d;
-
-                // Check for Feb 7, 2027 Yuma Birthday
-                if (year === 2027 && month === 1 && d === 7) {
-                    btn.classList.add('bg-red-500', 'text-white', 'font-bold');
-                    const dot = document.createElement('div');
-                    dot.className = 'w-1 h-1 bg-white rounded-full mt-0.5';
-                    btn.appendChild(dot);
-                }
-
-                btn.onclick = () => selectCalDay(year, month + 1, d);
-                grid.appendChild(btn);
-            }
-        }
-
-        function selectCalDay(y, m, d) {
-            const box = document.getElementById('cal-schedule-box');
-            if (y === 2027 && m === 2 && d === 7) {
-                box.innerHTML = `
-                    <div class="flex items-center gap-2 text-red-600 font-bold text-sm">
-                        <i class="fa-solid fa-cake-candles"></i>
-                        <span>유마 생일🎂</span>
-                    </div>
-                    <span class="text-[10px] text-slate-400 mt-1 block">하루 종일</span>
-                `;
-            } else {
-                box.innerText = `${y}년 ${m}월 ${d}일: 일정이 없습니다.`;
-            }
-        }
-
-        // --- 9. APPLE MUSIC LOGIC ---
-        function openAppleMusicTrack(url) {
-            if (url) window.open(url, '_blank');
-        }
-
-        // --- 10. INSTAGRAM LOGIC ---
-        function initInstaLikes() {
-            const likes = getStoredData(STORAGE_KEY_LIKES, { post1: false, post2: false });
-            updateInstaLikeUI('post1', likes.post1);
-            updateInstaLikeUI('post2', likes.post2);
-        }
-
-        function toggleLike(postId) {
-            let likes = getStoredData(STORAGE_KEY_LIKES, { post1: false, post2: false });
-            likes[postId] = !likes[postId];
-            setStoredData(STORAGE_KEY_LIKES, likes);
-            updateInstaLikeUI(postId, likes[postId]);
-        }
-
-        function updateInstaLikeUI(postId, isLiked) {
-            const btn = document.getElementById(`like-btn-${postId}`);
-            const count = document.getElementById(`likes-count-${postId}`);
-            if (btn) {
-                btn.innerHTML = isLiked ? '<i class="fa-solid fa-heart text-red-500"></i>' : '<i class="fa-regular fa-heart"></i>';
-            }
-            if (count) {
-                count.innerText = `좋아요 ${isLiked ? '1,235' : '1,234'}개`;
-            }
-        }
-
-        function showInstaTab(tab) {
-            document.getElementById('insta-view-feed').classList.add('hidden');
-            document.getElementById('insta-view-profile').classList.add('hidden');
-            document.getElementById('insta-view-detail').classList.add('hidden');
-
-            if (tab === 'feed') document.getElementById('insta-view-feed').classList.remove('hidden');
-            if (tab === 'profile') document.getElementById('insta-view-profile').classList.remove('hidden');
-        }
-
-        function openInstaDetail(postId) {
-            const container = document.getElementById('insta-detail-content');
-            const likes = getStoredData(STORAGE_KEY_LIKES, { post1: false, post2: false });
-            const isLiked = likes[postId];
-
-            if (postId === 'post1') {
-                container.innerHTML = `
-                    <div class="px-3 mb-2 flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center font-bold text-xs">N</div>
-                        <span class="font-bold text-xs">nyang2777</span>
-                    </div>
-                    <img src="${MEDIA_CONFIG.instagram_post1}" class="w-full h-80 object-cover">
-                    <div class="p-3">
-                        <div class="flex justify-between text-lg mb-2">
-                            <button onclick="toggleLike('post1'); openInstaDetail('post1');" id="like-btn-post1"><i class="${isLiked ? 'fa-solid fa-heart text-red-500' : 'fa-regular fa-heart'}"></i></button>
+                        <div class="p-3 flex items-center space-x-3">
+                            <img src="${MEDIA_CONFIG.profile_img}" class="w-8 h-8 rounded-full">
+                            <span class="font-semibold text-sm">yuma_andteam</span>
                         </div>
-                        <div class="text-xs font-bold mb-1">좋아요 ${isLiked ? '1,235' : '1,234'}개</div>
-                        <div class="text-xs"><span class="font-bold mr-1">nyang2777</span>이분 밤새고 한국 오셔서 피곤하시다네요..</div>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div class="px-3 mb-2 flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center font-bold text-xs">N</div>
-                        <span class="font-bold text-xs">nyang2777</span>
-                    </div>
-                    <img src="${MEDIA_CONFIG.instagram_post2}" class="w-full h-80 object-cover">
-                    <div class="p-3">
-                        <div class="flex justify-between text-lg mb-2">
-                            <button onclick="toggleLike('post2'); openInstaDetail('post2');" id="like-btn-post2"><i class="${isLiked ? 'fa-solid fa-heart text-red-500' : 'fa-regular fa-heart'}"></i></button>
-                        </div>
-                        <div class="text-xs font-bold mb-1">좋아요 ${isLiked ? '1,235' : '1,234'}개</div>
-                        <div class="text-xs mb-3"><span class="font-bold mr-1">nyang2777</span>고양이랑 머근 밥</div>
+                        <img src="${MEDIA_CONFIG.instagram_post1[0]}" class="w-full h-80 object-cover">
+                        <div class="p-3 text-sm"><span class="font-semibold">yuma_andteam</span> &TEAM Yuma 🖤</div>
                         
-                        <!-- Comment Section for Post 2 -->
-                        <div class="border-t border-slate-100 pt-2 mt-2">
-                            <div class="text-xs"><span class="font-bold mr-1">2nakakita7</span>なんでやねん！！😒</div>
+                        <div class="p-3 flex items-center space-x-3 mt-4">
+                            <img src="${MEDIA_CONFIG.profile_img}" class="w-8 h-8 rounded-full">
+                            <span class="font-semibold text-sm">yuma_andteam</span>
                         </div>
-                    </div>
-                `;
+                        <div class="overflow-x-auto flex space-x-2 no-scrollbar">${p2Media}</div>
+                    </div>`;
+            } else if (appName === 'kakaotalk') {
+                appContent.innerHTML = `
+                    <div class="bg-[#B2C7DA] min-h-full p-4 text-black">
+                        <div class="bg-white/80 backdrop-blur p-3 rounded-xl mb-4 text-center font-bold">유마 &TEAM</div>
+                        <div class="space-y-3">
+                            <div class="flex items-start space-x-2">
+                                <img src="${MEDIA_CONFIG.profile_img}" class="w-8 h-8 rounded-full">
+                                <div class="bg-white p-2.5 rounded-xl max-w-[70%] text-sm">안녕! 오늘 사진 보내줄게~</div>
+                            </div>
+                            <div class="flex items-start space-x-2">
+                                <img src="${MEDIA_CONFIG.profile_img}" class="w-8 h-8 rounded-full">
+                                <img src="${MEDIA_CONFIG.kakaotalk_chat_images.childhood}" class="w-48 rounded-xl">
+                            </div>
+                        </div>
+                    </div>`;
+            } else if (appName === 'music') {
+                appContent.innerHTML = `
+                    <div class="p-6 flex flex-col items-center justify-center min-h-full">
+                        <img src="${MEDIA_CONFIG.applemusic_cover}" class="w-64 h-64 rounded-2xl shadow-2xl mb-6">
+                        <h2 class="text-xl font-bold">War Cry</h2>
+                        <p class="text-gray-400 text-sm mt-1">&TEAM</p>
+                        <div class="flex items-center space-x-8 mt-8 text-2xl">
+                            <i class="fa-solid fa-backward"></i>
+                            <i class="fa-solid fa-play text-4xl"></i>
+                            <i class="fa-solid fa-forward"></i>
+                        </div>
+                    </div>`;
             }
-
-            document.getElementById('insta-view-detail').classList.remove('hidden');
-        }
-
-        function closeInstaDetail() {
-            document.getElementById('insta-view-detail').classList.add('hidden');
         }
     </script>
 </body>
