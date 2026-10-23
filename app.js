@@ -903,12 +903,7 @@ overflow: hidden;
       showToast("전화를 거절했습니다.");
     }
   }
-  $("#yuma-answer").addEventListener("click", answerCall);
-  $("#yuma-decline").addEventListener("click", finishCall);
-  $("#yuma-end").addEventListener("click", finishCall);
-  $("#yuma-mute").addEventListener("click", () => {
-    showToast("가상 통화에서는 음소거 상태만 변경할 수 있어요.");
-  });
+$("#yuma-end").addEventListener("click", finishCall);
   $("#yuma-speaker").addEventListener("click", () => {
     showToast("가상 통화에서는 스피커 상태만 변경할 수 있어요.");
   });
